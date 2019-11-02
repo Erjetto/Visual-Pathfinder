@@ -59,7 +59,7 @@ var View = {
         for(var i = 0; i < grid.length; i++){
             var row = grid[i]
             for(var j = 0; j < row.length; j++){
-                var rect = this.paper.rect(i*this.nodeSize, j*this.nodeSize + this.queuePanelHeight, 
+                var rect = this.paper.rect(j*this.nodeSize, i*this.nodeSize + this.queuePanelHeight, 
                     this.nodeSize, this.nodeSize)
                 // f = this.paper.text(i*this.nodeSize, j*this.nodeSize, "10"); f.attr(styles).transform("t5,7")
                 // g = this.paper.text(i*this.nodeSize, j*this.nodeSize, "0"); g.attr(fontStyle).attr({'text-anchor':'end',transform:'translate(50,6)'})
@@ -76,8 +76,8 @@ var View = {
         console.log(grid)
     },
     
-    // TODO: Operation must have its opposite for undo operation
-    possibleOperation: ['toQueue', 'fromQueue', 'open', 'close', 'empty', 'start', 'end'],
+    // TODO: ? Operation must have its opposite for undo operation
+    // possibleOperation: ['toQueue', 'fromQueue', 'open', 'close', 'empty', 'start', 'end'],
     setStateToNode: function(node, state, animateColor=false, animateZoom=false){
         console.log('node :', node);
         var style
@@ -127,13 +127,22 @@ var View = {
             y: this.queueNodeY
         }, 500, "ease-out")
 
-        movingRect.data('ref', node.view.rect)
+        movingRect.data('ref', node)
         // movingRect.click($.proxy(this.popQueue, this)) // for debug purpose
 
         movingRect.hover(function(){
-            this.data('ref').attr({fill:'yellow'})
+            let node = this.data('ref')
+            console.log({
+                x: node.gridX,
+                y: node.gridY,
+                f: node.values.f,
+                g: node.values.g,
+                h: node.values.h,
+            });
+            
+            this.data('ref').view.rect.attr({fill:'yellow'})
         }, function(){
-            this.data('ref').attr({fill: '#98fb98'})
+            this.data('ref').view.rect.attr({fill: '#98fb98'})
         })
         
         if(toFront)
@@ -153,8 +162,8 @@ var View = {
         let rect = this.queue.shift()
 
         rect.animate({
-            x: rect.data('ref').attrs.x, 
-            y: rect.data('ref').attrs.y
+            x: rect.data('ref').view.rect.attrs.x, 
+            y: rect.data('ref').view.rect.attrs.y
         }, 400, 'ease-out', function(){this.remove()})
         this.adjustQueue()
     },
@@ -162,10 +171,16 @@ var View = {
     ex: 7,5,1,2,3,9
     array -> [4,3,0,1,2,5]
     */
-   sortQueue: function(indexArray){
-       let newQueue = []
-       for(let i = 0; i < indexArray.length; i++){
-           newQueue.push(this.queue[indexArray.indexOf(i)])
+   sortQueue: function(sortedQueue){
+        let changeIndex = []
+
+        for (let i = 0; i < this.queue.length; i++) {
+            let n = this.queue[i].data('ref');
+            changeIndex.push(sortedQueue.indexOf(n))
+        }
+        let newQueue = []
+        for(let i = 0; i < changeIndex.length; i++){
+           newQueue.push(this.queue[changeIndex.indexOf(i)])
         }
         this.queue = newQueue
         this.adjustQueue()
@@ -199,7 +214,9 @@ var View = {
 
     //#region Coordinate Helper
     paperToGrid: function(coorX, coorY){ // Convert Paper coordinate to grid idx
-        return {x: Math.floor((coorY-this.queuePanelHeight)/this.nodeSize), y: Math.floor(coorX/this.nodeSize)}
+        return {
+            x: Math.floor(coorX/this.nodeSize), 
+            y: Math.floor((coorY-this.queuePanelHeight)/this.nodeSize)}
     }
     //#endregion
 }

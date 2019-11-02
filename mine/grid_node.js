@@ -19,7 +19,7 @@ var GridNode = function(param){
         neighbours  : [],
         parent      : undefined,
         values      : {
-            f: 0,
+            f: 0, 
             g: 0,
             h: 0
         },

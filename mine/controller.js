@@ -49,13 +49,17 @@ $.extend(Controller, {
 
         Calculator.onAddQueue.push(function(node, toFront=false){
             View.addNodeToQueue(node, toFront)
-        }.bind(this))
+        })
         Calculator.onPopQueue.push(function(node){
             View.popQueue()
-        }.bind(this))
+        })
         Calculator.onChangeState.push(function(node, state){
+            if(node == this.startNode || node == this.endNode) return
             View.setStateToNode(node,state,true,true)
         }.bind(this))
+        Calculator.onSortQueue.push(function(queue){
+            View.sortQueue(queue)
+        })
         
         // => ready
     },
@@ -74,6 +78,20 @@ $.extend(Controller, {
         Calculator.startNode = this.startNode
         Calculator.endNode = this.endNode
         Calculator.grids = this.grids
+        // set neighbours
+        for (let y = 0; y < this.numCols; y++) {
+            for (let x = 0; x < this.numRows; x++) {
+                let currNode = this.grids[y][x]
+                if(y != 0 && this.grids[y-1][x] != NODE_STATE.BLOCKED)
+                    currNode.neighbours.push(this.grids[y-1][x])
+                if(y != this.numCols-1 && this.grids[y+1][x] != NODE_STATE.BLOCKED)
+                    currNode.neighbours.push(this.grids[y+1][x])
+                if(x != 0 && this.grids[y][x-1] != NODE_STATE.BLOCKED)
+                    currNode.neighbours.push(this.grids[y][x-1])
+                if(x != this.numRows-1 && this.grids[y][x+1] != NODE_STATE.BLOCKED)
+                    currNode.neighbours.push(this.grids[y][x+1])
+            }
+        }
         this.search()
     },
     onrestart: function(){
@@ -130,23 +148,6 @@ $.extend(Controller, {
         View.setStateToNode(node,state, animateColor, animateZoom)
     },
 
-    // bindGridNodeState: function(){
-    //     this.operations = []
-    //     GridNode.prototype = {
-    //         get state() {
-    //             return this._state;
-    //         },
-    //         set state(value) {
-    //             this._state = value;
-    //             Controller.operations.push({
-    //                 gridX: this.gridX,
-    //                 gridY: this.gridY,
-    //                 operation: value,
-    //             })
-    //         },
-    //     }
-    // },
-
     //#region play events
     onClickPlay: function(event){
     },
@@ -156,7 +157,7 @@ $.extend(Controller, {
         }
     },
     onClickForward: function(event){
-        console.log('forwarding');
+        // console.log('forwarding');
         
         if(Controller.is('ready')){ // If its the first play
             Controller.start()
@@ -190,6 +191,7 @@ $.extend(Controller, {
     },
     mousemove: function(event){
         let coor = View.paperToGrid(event.offsetX, event.offsetY)
+        if(coor.x < 0 || coor.y < 0) return
         let currNode = this.grids[coor.y][coor.x]
         switch(this.current){
             case 'draggingStart':

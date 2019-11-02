@@ -9,11 +9,11 @@ var Calculator = {
     commandsStack: [], // {targetedNode:Object, executedCmd:Command}
     // commandsUndoStack: [], // unused?
     
-    viewOperations: [], // Pass view change attribute method to the View model
+    // viewOperations: [], // Pass view change attribute method to the View model
 
     grids: undefined, // Get the grid from controller
-    openList: [],  // Queue
-    closedList: [], // Visited
+    openSet: [],  // Queue
+    // closedSet: [], // Visited
     currentNode: undefined,
     startNode: undefined,
     endNode: undefined,
@@ -42,38 +42,47 @@ var Calculator = {
         }
         return line
     },
-    
+
+    //#region Methods for Command to use
+    algoInfo: {}, // Keep the data from algorithm, ex: loopIndex = 2
     onChangeState: [], // (node, state)
     onAddQueue: [], // (node, toFront)
     onPopQueue: [], // (node)
+    onSortQueue: [], // ([nodes])
     changeNodeState: function(node, state){
         node.state = state
         this.onChangeState.forEach((callback) => callback(node,state))
     },
     addToQueue: function(node, toFront=false){
         if(toFront)
-            this.openList.unshift(node)
+            this.openSet.unshift(node)
         else
-            this.openList.push(node)
+            this.openSet.push(node)
         // Add other event?
         this.onAddQueue.forEach((callback) => callback(node, toFront))
     },
     popQueue: function(){
-        this.currentNode = this.openList.shift()
+        this.currentNode = this.openSet.shift()
         this.onPopQueue.forEach((callback) => callback(this.currentNode))
     },
+    sortQueue: function(){
+        this.openSet.sort((a,b) => a.values.f-b.values.f)
+        this.onSortQueue.forEach((callback) => callback(this.openSet))
+    },
+    //#endregion
 
     operateNextLine: function(){
         // if(this.isFirst) this.init()
-        console.log('Operating next line');
         
         if(!this.isOperable){
             console.log('The calculator is not operable');
             return
         }
         this.currentLine = this.getNextOperableLine()
+        // console.log('Operating next line => ' + this.currentAlgorithm.pseudocode[this.currentLineIndex]);
         state = this.currentLine.execute(this)
         this.onExecuteLine()
+        
         this.commandsStack.push(state)
     },
     undoCommand: function(){
@@ -105,6 +114,7 @@ var Calculator = {
     
     setAlgorithm: function(algo){ // pass the astar variable here
         this.currentAlgorithm = algo
+        if(algo.init) algo.init(this)
         // If lines obj has line in it.....
         // CodePanel.generateLine(this.currentAlgorithm.lines.map(l => l.line))
         CodePanel.generateLine(this.currentAlgorithm.pseudocode)

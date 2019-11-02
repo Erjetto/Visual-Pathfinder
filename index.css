@@ -17,7 +17,7 @@ body{
 
 /*------------------------------------------------------------*/
 .main__left{
-    flex: 0 0 450px;
+    flex: 0 0 500px;
     background-color: aliceblue;
     
     display: flex;
@@ -31,6 +31,7 @@ body{
     display: flex;
     flex-flow: column;
     padding: 8px 0;
+    font-size: 1rem;
 }
 .code_line{
     padding: 4px 8px;
@@ -90,6 +91,14 @@ body{
     flex: 1;
 }
 
-
+@media screen and (max-width: 1367px){
+    .main__left{
+        flex: 0 0 400px;
+    }
+    .codes_panel{
+        font-size: 0.9rem;
+        
+    }
+}
 
 
