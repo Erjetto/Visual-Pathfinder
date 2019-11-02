@@ -1,0 +1,95 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+
+body{
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+}
+
+.center_content{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/*------------------------------------------------------------*/
+.main__left{
+    flex: 0 0 450px;
+    background-color: aliceblue;
+    
+    display: flex;
+    flex-flow: column;
+}
+
+.codes_panel{
+    flex: 0 0 350px;
+    background-color: brown;
+    
+    display: flex;
+    flex-flow: column;
+    padding: 8px 0;
+}
+.code_line{
+    padding: 4px 8px;
+    /* font-size: 125%; */
+    font-family: 'Courier New', Courier, monospace
+}
+
+.active_line{
+    background-color: black;
+    color: white
+}
+
+.buttons_panel{
+    flex: 0 0 100px;
+    background-color: grey;
+    
+    display: flex;
+    justify-content: center;
+    
+}
+.control_button{
+    height: 100px;
+    /* flex: 1; */
+}
+.control_button:hover{
+    background-color: rgba(0,0,0,0.2);
+}
+.arrow{
+    fill: #333333;
+}
+
+.details_panel{
+    
+}
+
+.main__right{
+    flex: 1 1;
+    background-color: burlywood;
+
+    display: flex;
+    flex-flow: column;
+}
+
+.queue_panel{
+    flex: 0 0 75px;
+    background-color: blanchedalmond;
+
+    display: flex;
+    justify-content: flex-start;
+}
+.queue_panel > span:first-child {
+    width: 100px;
+    background-color: rgba(0,0,0,0.2);
+}
+
+.grid_panel{
+    flex: 1;
+}
+
+
+
+

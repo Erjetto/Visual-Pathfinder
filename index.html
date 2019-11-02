@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="lib/jquery-1.7.2.min.js"></script>
+    <script src="lib/raphael-min.js"></script>
+    <script src="lib/statemachine-min.js"></script>
+    <script src="lib/async.min.js"></script>
+
+    <script src="mine/a_star.js"></script>
+    <script src="mine/play_panel.js"></script>
+    <script src="mine/code_panel.js"></script>
+    <script src="mine/grid_node.js"></script>
+    <script src="mine/calculator.js"></script>
+    <script src="mine/view.js"></script>
+    <script src="mine/controller.js"></script>
+    <script src="mine/main.js"></script>
+
+    <link rel="stylesheet" href="index.css">
+    <title>Pathfinder</title>
+</head>
+<body>
+    <div class="main__left">
+        <div class="codes_panel">
+            <p class="code_line active_line">Lorem ipsum dolor sit amet consectetur adipisicing elit. Laborum eius accusantium aliquid praesentium,</p>
+            <p class="code_line">hic quisquam dicta vero ut quas at soluta</p>
+            <p class="code_line">accusamus mollitia libero a sunt facilis ad dolorum. Inventore.</p>
+        </div>
+        <div class="buttons_panel">
+            <img id="back_button" class="control_button" src="images/prev.svg" alt="">
+            <img id="play_button" class="control_button" src="images/play.svg" alt="">
+            <img id="forward_button" class="control_button" src="images/next.svg" alt="">
+            
+        </div>
+        <div class="details_panel">
+
+        </div>
+    </div>
+    <div class="main__right">
+        <div class="grid_panel" id="draw_area">
+
+        </div>
+    </div>
+</body>
+</html>
