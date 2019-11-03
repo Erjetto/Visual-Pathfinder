@@ -83,6 +83,7 @@ var astar = {
                 return ChangeState.create(change, this)
             }, undo: function(calculator, change){
                 calculator.algoInfo['loopNeighbourIndex']--
+                
             } 
         },
         { // '        if neighbour.state is closed or opened or blocked:',
@@ -121,6 +122,8 @@ var astar = {
             execute: function(calculator){
                 let change = [] 
                 let node = calculator.currentNode.neighbours[calculator.algoInfo['loopNeighbourIndex']]
+                console.log(node);
+                
                 if(node.state != NODE_STATE.EMPTY
                     && node.state != NODE_STATE.START){
                     calculator.setJumpToLineNum(10) // else if....

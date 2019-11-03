@@ -49,7 +49,7 @@ var Calculator = {
     onAddQueue: [], // (node, toFront)
     onPopQueue: [], // (node)
     onSortQueue: [], // ([nodes])
-    changeNodeState: function(node, state){
+    changeNodeState: function(node, state){ 
         node.state = state
         this.onChangeState.forEach((callback) => callback(node,state))
     },

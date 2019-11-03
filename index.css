@@ -91,6 +91,10 @@ body{
     flex: 1;
 }
 
+.gold{
+    fill: yellow
+}
+
 @media screen and (max-width: 1367px){
     .main__left{
         flex: 0 0 400px;

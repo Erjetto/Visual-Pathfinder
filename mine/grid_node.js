@@ -1,10 +1,10 @@
 const NODE_STATE = {
-    OPENED: 1,
-    CLOSED: 2,
-    START:  3,
-    END:    4,
-    EMPTY:  5,
-    BLOCKED:6
+    OPENED: 'opened',
+    CLOSED: 'closed',
+    START:  'start',
+    END:    'end',
+    EMPTY:  'empty',
+    BLOCKED:'blocked'
 }
 /**
  * 
@@ -18,6 +18,7 @@ var GridNode = function(param){
         gridY       : param.gridY,
         neighbours  : [],
         parent      : undefined,
+        state       : NODE_STATE.EMPTY,
         values      : {
             f: 0, 
             g: 0,
@@ -29,14 +30,6 @@ var GridNode = function(param){
             f: undefined,
             g: undefined,
             h: undefined
-        },
-
-        _state      : NODE_STATE.EMPTY,
-        get state() {
-            return this._state;
-        },
-        set state(value) {
-            this._state = value;
         },
     }
 }

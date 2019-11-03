@@ -2,36 +2,28 @@ var View = {
     nodeSize: 40, // width and height of a single node, in pixel
     //#region Styles
     nodeStyle: {
-        normal: {
+        [NODE_STATE.EMPTY]: {
             fill: '#fff',
             'stroke-opacity': 0.2, // the border
         },
-        blocked: {
+        [NODE_STATE.BLOCKED]: {
             fill: 'grey',
             'stroke-opacity': 0.2,
         },
-        start: {
+        [NODE_STATE.START]: {
             fill: '#0d0',
             'stroke-opacity': 0.2,
         },
-        end: {
+        [NODE_STATE.END]: {
             fill: '#e40',
             'stroke-opacity': 0.2,
         },
-        opened: {
+        [NODE_STATE.OPENED]: {
             fill: '#98fb98',
             'stroke-opacity': 0.2,
         },
-        closed: {
+        [NODE_STATE.CLOSED]: {
             fill: '#afeeee',
-            'stroke-opacity': 0.2,
-        },
-        failed: {
-            fill: '#ff8888',
-            'stroke-opacity': 0.2,
-        },
-        tested: {
-            fill: '#e5e5e5',
             'stroke-opacity': 0.2,
         },
     },
@@ -65,7 +57,7 @@ var View = {
                 // g = this.paper.text(i*this.nodeSize, j*this.nodeSize, "0"); g.attr(fontStyle).attr({'text-anchor':'end',transform:'translate(50,6)'})
                 // h = this.paper.text(i*this.nodeSize, j*this.nodeSize, "0"); h.attr(fontStyle).attr({'text-anchor':'end',transform:'translate(50,44)'})
 
-                rect.attr(this.nodeStyle.normal)
+                rect.attr(this.nodeStyle[NODE_STATE.EMPTY])
                 row[j].view.rect = rect
                 // row[j].view.f    = f
                 // row[j].view.g    = g
@@ -76,25 +68,9 @@ var View = {
         console.log(grid)
     },
     
-    // TODO: ? Operation must have its opposite for undo operation
-    // possibleOperation: ['toQueue', 'fromQueue', 'open', 'close', 'empty', 'start', 'end'],
     setStateToNode: function(node, state, animateColor=false, animateZoom=false){
         console.log('node :', node);
-        var style
-        switch(state){
-            case NODE_STATE.START: style = this.nodeStyle.start
-                break
-            case NODE_STATE.OPENED: style = this.nodeStyle.opened
-                break
-            case NODE_STATE.CLOSED: style = this.nodeStyle.closed
-                break
-            case NODE_STATE.EMPTY: style = this.nodeStyle.normal
-                break
-            case NODE_STATE.END: style = this.nodeStyle.end
-                break
-            case NODE_STATE.BLOCKED: style = this.nodeStyle.blocked
-                break
-        }
+        let style = this.nodeStyle[state]
         
         if(animateColor)
             node.view.rect.animate(style, this.nodeColorizeEffect.duration)
@@ -140,9 +116,9 @@ var View = {
                 h: node.values.h,
             });
             
-            this.data('ref').view.rect.attr({fill:'yellow'})
+            this.data('ref').view.rect.node.setAttribute('class', 'gold') //.attr({fill:'yellow'})
         }, function(){
-            this.data('ref').view.rect.attr({fill: '#98fb98'})
+            this.data('ref').view.rect.node.setAttribute('class', '') //.attr({fill: '#98fb98'})
         })
         
         if(toFront)

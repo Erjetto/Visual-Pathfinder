@@ -147,9 +147,19 @@ $.extend(Controller, {
         node.state = state
         View.setStateToNode(node,state, animateColor, animateZoom)
     },
-
+    isAuto: false,
+    intervalHandler: 0,
     //#region play events
     onClickPlay: function(event){
+        this.isAuto = !this.isAuto
+        if(this.isAuto){
+            this.intervalHandler = setInterval(this.onClickForward.bind(this), 200)
+            console.log('AutoPlaying');
+            
+        } else {
+            clearInterval(this.intervalHandler)
+        }
+
     },
     onClickBack: function(event){
         if(Controller.is('searching')){

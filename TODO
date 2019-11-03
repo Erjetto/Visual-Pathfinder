@@ -1,0 +1,5 @@
+
+Todo:
+  ☐ Change ChangeState to retrieve object instead
+  ☐ Do something with NODE_STATE.START & END because it's interfering algorithm
+  ☐ 
