@@ -60,6 +60,16 @@ $.extend(Controller, {
         Calculator.onSortQueue.push(function(queue){
             View.sortQueue(queue)
         })
+        Calculator.prototype = {
+            get currentNode(){
+                return this._currentNode;
+            },
+            set currentNode(v){
+                View.zoomNode(this._currentNode, false)
+                this._currentNode = v
+                View.zoomNode(this._currentNode, true)
+            }
+        }
         
         // => ready
     },
@@ -79,17 +89,34 @@ $.extend(Controller, {
         Calculator.endNode = this.endNode
         Calculator.grids = this.grids
         // set neighbours
-        for (let y = 0; y < this.numCols; y++) {
-            for (let x = 0; x < this.numRows; x++) {
+        let startX, startY, endX, endY
+        for (let y = 0; y < this.numRows; y++) {
+            for (let x = 0; x < this.numCols; x++) {
                 let currNode = this.grids[y][x]
-                if(y != 0 && this.grids[y-1][x] != NODE_STATE.BLOCKED)
+                startY = y == 0
+                startX = x == 0
+                endY = y == this.numRows - 1
+                endX = x == this.numCols - 1
+
+                if(!startY && this.grids[y-1][x] != NODE_STATE.BLOCKED)
                     currNode.neighbours.push(this.grids[y-1][x])
-                if(y != this.numCols-1 && this.grids[y+1][x] != NODE_STATE.BLOCKED)
+                if(!endY && this.grids[y+1][x] != NODE_STATE.BLOCKED)
                     currNode.neighbours.push(this.grids[y+1][x])
-                if(x != 0 && this.grids[y][x-1] != NODE_STATE.BLOCKED)
+
+                if(!startX && this.grids[y][x-1] != NODE_STATE.BLOCKED)
                     currNode.neighbours.push(this.grids[y][x-1])
-                if(x != this.numRows-1 && this.grids[y][x+1] != NODE_STATE.BLOCKED)
+                if(!endX&& this.grids[y][x+1] != NODE_STATE.BLOCKED)
                     currNode.neighbours.push(this.grids[y][x+1])
+
+                if(!startX && !startY && this.grids[y-1][x-1] != NODE_STATE.BLOCKED)
+                    currNode.neighbours.push(this.grids[y-1][x-1])
+                if(!endX && !startY && this.grids[y-1][x+1] != NODE_STATE.BLOCKED)
+                    currNode.neighbours.push(this.grids[y-1][x+1])
+                if(!startX && !endY && this.grids[y+1][x-1] != NODE_STATE.BLOCKED)
+                    currNode.neighbours.push(this.grids[y+1][x-1])
+                if(!endX && !endY && this.grids[y+1][x+1] != NODE_STATE.BLOCKED)
+                    currNode.neighbours.push(this.grids[y+1][x+1])
+                
             }
         }
         this.search()
@@ -154,9 +181,10 @@ $.extend(Controller, {
         this.isAuto = !this.isAuto
         if(this.isAuto){
             this.intervalHandler = setInterval(this.onClickForward.bind(this), 200)
-            console.log('AutoPlaying');
-            
+            // console.log('AutoPlaying');
+            PlayPanel.playButton.text('Pause')
         } else {
+            PlayPanel.playButton.text('Play')
             clearInterval(this.intervalHandler)
         }
 
@@ -174,6 +202,7 @@ $.extend(Controller, {
         } else if(Controller.is('searching')){
             Calculator.operateNextLine()
         }
+        
 
     },
     mouseup: function(event){

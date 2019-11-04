@@ -1,5 +1,38 @@
-
 Todo:
-  ☐ Change ChangeState to retrieve object instead
-  ☐ Do something with NODE_STATE.START & END because it's interfering algorithm
-  ☐ 
+	☐ Change ChangeState to retrieve object instead
+	☐ Rework the pseudocode implementation
+		1. The scope should represent an object inside an object for easy code jump
+			ex 
+				`{`
+					`pseudocode -> 'if state is empty'`
+					`scope -> [`
+						`{ pseudocode -> '  set node value', execute -> {}, etc },`
+						`{ pseudocode -> '  set node parent', execute -> {}, etc },`
+					`]`
+					`execute -> {} -> push scope to commands stack if condition is true`
+				`}`
+		2. Structure for line ->
+			`{`
+				`lineIndex -> for easy line index `
+				`pseudocode,`
+				`scope -> []`
+				`execute -> `
+				`undo`
+				`explanation -> 'The state is ${node.state} so it's true'`
+			`}`
+		3. If loop -> push scope then push itself
+		4. If condition -> only push scope
+	☐ Changing node in view is too hard because setNodeToState() is badly implemented
+	☐ NODE_STATE.START & END shouldn't be a real NODE_STATE, remove it later
+		change validation to this.startNode instead
+	☐ List of animations to be added:
+		☐ Show the neighbour
+			Glow or scale animation?
+		☐ Set parent visited animation
+			Is this neccessary?
+		☐ Calculate f,g,h animation
+		☐ Show preview
+			When hover a node, show something
+	☐ Add explanation below the pseudocode
+	☐ Add dropdown to choose pseudocode
+		A* or Dijkstra

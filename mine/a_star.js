@@ -12,9 +12,10 @@ Ex: line3 => node(5,5) is visited
  * Contains the node that is changed and the line that is executed
  * 
  */
+// TODO: Make this happen
 var ChangeState = {
     create: function(nodes, command){
-        return {targetedNodes: nodes, executedLine: command}
+        return {executedLine: command}
     }
 }
 
@@ -28,41 +29,38 @@ var astar = {
         { // 'openSet = {start}',
             execute: function(calculator){ //
                 // Put start node to queue
-                let change = [] 
+                 
                 calculator.setJumpToLineNum(2)
-                change.push(calculator.startNode)
+                
                 calculator.addToQueue(calculator.startNode)
 
-                return ChangeState.create(change, this)
+                return {executedLine: this}
             },
             undo: function(calculator, change){
-                // 
+                calculator.popQueue()
             }
         },
         { // 'do:',
         },
         { // '    visited = openSet.pop()',
             execute: function(calculator){
-                let change = [] // contains prev & next node
-                change.push(calculator.currentNode)
+                let prev = calculator.currentNode
                 calculator.popQueue()
-                change.push(calculator.currentNode)
                 
                 console.log('visited = ')
                 console.log(calculator.currentNode);
-                return ChangeState.create(change, this)
+                return {prev: prev, currNode: calculator.currentNode, executedLine: this}
             },
             undo: function(calculator, change){
-                calculator.addToQueue(change.targetedNodes[1], true)
-                calculator.currentNode = change.targetedNodes[0]
+                calculator.addToQueue(change.prev, true)
+                calculator.currentNode = change.prev
             }
         },
         { // '    set visited to closed',
             execute: function(calculator){
-                let change = [] 
                 // if(calculator.currentNode.state == NODE_STATE.OPENED)
                     calculator.changeNodeState(calculator.currentNode, NODE_STATE.CLOSED)
-                return ChangeState.create(change, this)
+                return {executedLine: this}
             },
             undo: function(calculator, change){
                 // if(calculator.currentNode.state == NODE_STATE.CLOSED)
@@ -71,28 +69,30 @@ var astar = {
         },
         { // '    for each neighbour in visited.neighbour:',
             execute: function(calculator){ // Add index, or end the loop
-                let change = [] 
+                let prevIdx
                 if(calculator.algoInfo['loopNeighbourIndex'] >= calculator.currentNode.neighbours.length - 1){
                     calculator.algoInfo['loopNeighbourIndex'] = -1
+                    prevIdx = -1
                     calculator.setJumpToLineNum(14) // sort.....
                 }
-                else     
-                    calculator.algoInfo['loopNeighbourIndex']++
+                else{
+                    prevIdx = calculator.algoInfo['loopNeighbourIndex']++
+                }
                 
 
-                return ChangeState.create(change, this)
+                return {prevIdx: prevIdx,executedLine: this}
             }, undo: function(calculator, change){
-                calculator.algoInfo['loopNeighbourIndex']--
+                calculator.algoInfo['loopNeighbourIndex'] = change.prevIdx
                 
             } 
         },
         { // '        if neighbour.state is closed or opened or blocked:',
             execute: function(calculator){
-                let change = [] 
+                 
                 let node = calculator.currentNode.neighbours[calculator.algoInfo['loopNeighbourIndex']]
                 if(node.state != NODE_STATE.CLOSED && node.state != NODE_STATE.OPENED && node.state != NODE_STATE.BLOCKED)
                     calculator.setJumpToLineNum(7)
-                return ChangeState.create(change, this)
+                return {executedLine: this}
             }, 
             undo: function(calculator, change){
 
@@ -100,9 +100,9 @@ var astar = {
         },
         { // '            continue'
             execute: function(calculator){
-                let change = [] 
+                 
                 calculator.setJumpToLineNum(4)
-                return ChangeState.create(change, this)
+                return {executedLine: this}
             }, 
             undo: function(calculator, change){
 
@@ -110,9 +110,9 @@ var astar = {
         },
         { // '        set neighbour.parent to visited',
             execute: function(calculator){
-                let change = [] 
+                 
                 calculator.currentNode.neighbours[calculator.algoInfo['loopNeighbourIndex']].parent = calculator.currentNode
-                return ChangeState.create(change, this)
+                return {executedLine: this}
             }, 
             undo: function(calculator, change){
                 calculator.currentNode.neighbours[calculator.algoInfo['loopNeighbourIndex']].parent = undefined
@@ -120,21 +120,21 @@ var astar = {
         },
         { // '        if neighbour is empty OR START:',
             execute: function(calculator){
-                let change = [] 
+                 
                 let node = calculator.currentNode.neighbours[calculator.algoInfo['loopNeighbourIndex']]
                 console.log(node);
                 
                 if(node.state != NODE_STATE.EMPTY
                     && node.state != NODE_STATE.START){
-                    calculator.setJumpToLineNum(10) // else if....
+                    calculator.setJumpToLineNum(12) // else if....
                 }
-                return ChangeState.create(change, this)
+                return {executedLine: this}
             }, undo: function(calculator, change){} 
         },
         { // '            calculate f, g & h',
             execute: function(calculator){
                 // Show change in the view as well
-                let change = [] 
+                 
                 let currNode = calculator.currentNode.neighbours[calculator.algoInfo['loopNeighbourIndex']]
                 let diffX = currNode.gridX - calculator.endNode.gridX,
                     diffY = currNode.gridY - calculator.endNode.gridY
@@ -142,11 +142,11 @@ var astar = {
                 currNode.values.h = calculator.currentNode.values.h + 1
                 currNode.values.g = Math.sqrt(diffX*diffX + diffY*diffY)
                 currNode.values.f = currNode.values.h + currNode.values.g
-                console.log('currNode :', currNode);
-                change.push(currNode)
-                return ChangeState.create(change, this)
-            }, undo: function(calculator, change){
-                let currNode = calculator.currentNode
+                
+                return {currNode: currNode, executedLine: this}
+            }, 
+            undo: function(calculator, change){
+                let currNode = change.currNode
                 currNode.values.h = 0
                 currNode.values.g = 0
                 currNode.values.f = 0
@@ -154,23 +154,23 @@ var astar = {
         },
         { // '            set neighbour state to opened',
             execute: function(calculator){
-                let change = [] 
+                 
                 let node = calculator.currentNode.neighbours[calculator.algoInfo['loopNeighbourIndex']]
                 calculator.changeNodeState(node, NODE_STATE.OPENED)
-                change.push(node)
-                return ChangeState.create(change, this)
+                
+                return {openedNode: node, executedLine: this}
             }, 
             undo: function(calculator, change){
-                calculator.changeNodeState(calculator.currentNode.neighbours[calculator.algoInfo['loopNeighbourIndex']], NODE_STATE.EMPTY)
+                calculator.changeNodeState(chage.openedNode, NODE_STATE.EMPTY)
                 
             } 
         },
         { // '            add neighbour to openSet',
             execute: function(calculator){
-                let change = []
                 calculator.addToQueue(calculator.currentNode.neighbours[calculator.algoInfo['loopNeighbourIndex']])
                 calculator.setJumpToLineNum(4)
-                return ChangeState.create(change, this)
+
+                return {executedLine: this}
             }, 
             undo: function(calculator, change){
                 calculator.popQueue()
@@ -178,18 +178,18 @@ var astar = {
         },
         { // '        else if neighbour is an endpoint:',
             execute: function(calculator){
-                let change = [] 
+                 
                 if(calculator.currentNode.neighbours[calculator.algoInfo['loopNeighbourIndex']].state != NODE_STATE.END)
                     calculator.setJumpToLineNum(14) // sort...
-                return ChangeState.create(change, this)
+                return {executedLine: this}
             }, undo: function(calculator, change){} 
         },
         { // '            return neighbour',
             execute: function(calculator){
                 // TODO: Do something after return
-                let change = [] 
+                 
                 calculator.isFinished = true
-                return ChangeState.create(change, this)
+                return {executedLine: this}
             }, undo: function(calculator, change){
                 
                 calculator.isFinished = false
@@ -197,18 +197,18 @@ var astar = {
         },
         { // '    sort queue by the f value',
             execute: function(calculator){
-                let change = [] 
+                 
                 calculator.sortQueue()
-                return ChangeState.create(change, this)
+                return {executedLine: this}
             }, undo: function(calculator, change){
             } 
         },
         { // 'while openSet.length > 0'
             execute: function(calculator){
-                let change = [] 
+                 
                 if (calculator.openSet.length > 0)
                     calculator.setJumpToLineNum(2)
-                return ChangeState.create(change, this)
+                return {executedLine: this}
             }, undo: function(calculator, change){
                 
             } 
@@ -216,8 +216,8 @@ var astar = {
         { // 'end'
             execute: function(calculator){
                 calculator.isFinished = true
-                let change = [] 
-                return ChangeState.create(change, this)
+                 
+                return {executedLine: this}
             }, undo: function(calculator, change){
                 calculator.isFinished = false
             } 

@@ -13,8 +13,13 @@ var Calculator = {
 
     grids: undefined, // Get the grid from controller
     openSet: [],  // Queue
-    // closedSet: [], // Visited
-    currentNode: undefined,
+    _currentNode: undefined,
+    get currentNode() {
+        return this._currentNode;
+    },
+    set currentNode(value) {
+        this._currentNode = value;
+    },
     startNode: undefined,
     endNode: undefined,
 
@@ -69,6 +74,7 @@ var Calculator = {
         this.openSet.sort((a,b) => a.values.f-b.values.f)
         this.onSortQueue.forEach((callback) => callback(this.openSet))
     },
+    
     //#endregion
 
     operateNextLine: function(){

@@ -56,7 +56,7 @@ var View = {
                 // f = this.paper.text(i*this.nodeSize, j*this.nodeSize, "10"); f.attr(styles).transform("t5,7")
                 // g = this.paper.text(i*this.nodeSize, j*this.nodeSize, "0"); g.attr(fontStyle).attr({'text-anchor':'end',transform:'translate(50,6)'})
                 // h = this.paper.text(i*this.nodeSize, j*this.nodeSize, "0"); h.attr(fontStyle).attr({'text-anchor':'end',transform:'translate(50,44)'})
-
+                
                 rect.attr(this.nodeStyle[NODE_STATE.EMPTY])
                 row[j].view.rect = rect
                 // row[j].view.f    = f
@@ -65,6 +65,7 @@ var View = {
 
             }
         }
+        grid[1][0].view.rect.node.setAttribute('class', 'glowing')
         console.log(grid)
     },
     
@@ -81,6 +82,14 @@ var View = {
         //     node.view.group.toFront()
         //         .attr({transform: this.nodeZoomEffect.transform})
         //         .animate({transform: this.nodeZoomEffect.transformBack}, this.nodeZoomEffect.duration)
+    },
+
+    zoomNode: function(node, doesZoom){
+        console.log('node :', node);
+        if(node == undefined) return
+        node.view.rect.toFront().animate({transform: doesZoom ? 
+                    this.nodeZoomEffect.transform
+                : this.nodeZoomEffect.transformBack}, 200)
     },
 
     queue: [],
