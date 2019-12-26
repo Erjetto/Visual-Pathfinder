@@ -125,8 +125,4 @@ var Calculator = {
         // CodePanel.generateLine(this.currentAlgorithm.lines.map(l => l.line))
         CodePanel.generateLine(this.currentAlgorithm.pseudocode)
     },
-
-    setJumpToLineNum: function(idx){
-        this.jumpToLineNum = idx
-    }
 }

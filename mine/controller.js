@@ -24,8 +24,8 @@ var Controller = StateMachine.create({
 })
 
 $.extend(Controller, {
-    numCols: 30,
-    numRows: 30,
+    numCols: 20,
+    numRows: 20,
     grids: [],
     startNode: undefined,
     endNode: undefined,

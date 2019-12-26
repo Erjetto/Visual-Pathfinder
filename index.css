@@ -1,12 +1,14 @@
 *{
     padding: 0;
     margin: 0;
+    position: relative;
 }
 
 body{
     display: flex;
     width: 100vw;
     height: 100vh;
+    font-size: 1rem;
 }
 
 .center_content{
@@ -15,17 +17,20 @@ body{
     justify-content: center;
 }
 
-/*------------------------------------------------------------*/
+/*LEFT PANEL STYLING*/
 .main__left{
     flex: 0 0 500px;
     background-color: aliceblue;
     
     display: flex;
     flex-flow: column;
+
+    box-shadow: -1px 0px 8px 1px grey;
+    z-index: 999;
 }
 
 .codes_panel{
-    flex: 0 0 350px;
+    flex: 1 0 400px;
     background-color: burlywood;
     
     display: flex;
@@ -34,8 +39,7 @@ body{
     font-size: 1rem;
 }
 .code_line{
-    padding: 4px 8px;
-    /* font-size: 125%; */
+    padding: 1px 8px;
     font-family: 'Courier New', Courier, monospace
 }
 
@@ -45,7 +49,7 @@ body{
 }
 
 .buttons_panel{
-    flex: 0 0 50px;
+    flex: 0 0 40px;
     background-color: grey;
     
     display: flex;
@@ -54,8 +58,7 @@ body{
     
 }
 .control_button{
-    height: 100px;
-    /* flex: 1; */
+    font-size: 12px;
 }
 .control_button:hover{
     background-color: rgba(0,0,0,0.2);
@@ -64,10 +67,60 @@ body{
     fill: #333333;
 }
 
+
 .details_panel{
-    
+    flex: 0 1 50%;
+    display: flex;
+    flex-flow: column;
 }
 
+.details__header{
+    padding: 8px;
+    flex: 0 0 45px;
+}
+
+.history-list{
+    padding: 8px;
+    overflow-y: auto;
+    flex: 1 0 200px;
+}
+
+.history-list > li{
+    position: relative;
+    margin-bottom: 4px;
+    padding: 4px;
+    border-bottom: 1px solid lightgrey;
+    transition: background-color,transform 0.1s linear;
+    /* border-radius: 8px; */
+}
+.history-list > li:hover{
+    background-color: lightgray;
+    /* color: white; */
+}
+
+.animate-list-enter{
+    animation: enter_animation 0.3s normal ease-out;
+}
+
+.animate-list-out{
+    animation: enter_animation 0.3s forwards reverse ease-in;
+}
+
+@keyframes enter_animation{
+    0%{
+        left: -100%;
+        opacity: 0;
+    }
+    50%{
+        opacity: 0.5;
+    }
+    100%{
+        left: 0;
+        position: relative;
+    }
+}
+
+/* GRID STYLING */
 .main__right{
     flex: 1 1;
     background-color: white;
@@ -98,28 +151,33 @@ body{
 
 .glowing{
     fill: yellow;
-    animation: glow 1s infinite;
+    animation: glow 1s infinite ease-in-out;
+    z-index: 99;
+    transform-origin: center center;
 }
 
-@keyframes glow{
-    0%{
-        fill-opacity: 0;
-    }
-    50%{
-        fill-opacity: 1
-    }
-    100%{
-        fill-opacity: 0
-    }
+@keyframes empty-glow{
+    0%{ fill: white; transform: scale(1) }
+    50%{ fill: yellow; transform: scale(1.2) }
+    100%{ fill: white; transform: scale(1) }
+}
+
+@keyframes open-glow{
+    0%{ fill: white; }
+    50%{ fill: yellow }
+    100%{ fill: white }
 }
 
 @media screen and (max-width: 1367px){
+    html{
+        font-size: 0.7rem;
+    }
+
     .main__left{
-        flex: 0 0 400px;
+        flex: 0 0 350px;
     }
     .codes_panel{
-        font-size: 0.9rem;
-        
+        flex: 0 0 350px;
     }
 }
 

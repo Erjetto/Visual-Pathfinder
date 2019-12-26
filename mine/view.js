@@ -1,5 +1,32 @@
+function interpolateColor(color1, color2, factor) {
+    if (arguments.length < 3) { 
+        factor = 0.5; 
+    }
+    var result = color1.slice();
+    for (var i = 0; i < 3; i++) {
+        result[i] = Math.round(result[i] + factor * (color2[i] - color1[i]));
+    }
+    return result;
+};
+// My function to interpolate between two colors completely, returning an array
+function interpolateColors(color1, color2, steps) {
+    var stepFactor = 1 / (steps - 1),
+        interpolatedColorArray = [];
+
+    color1 = color1.match(/\d+/g).map(Number);
+    color2 = color2.match(/\d+/g).map(Number);
+
+    for(var i = 0; i < steps; i++) {
+        interpolatedColorArray.push(interpolateColor(color1, color2, stepFactor * i));
+    }
+
+    return interpolatedColorArray;
+}
+
+var colors = interpolateColors('rgb(240, 64, 0)', 'rgb(0,255,0)', 10)
+
 var View = { 
-    nodeSize: 40, // width and height of a single node, in pixel
+    nodeSize: 60, // width and height of a single node, in pixel
     //#region Styles
     nodeStyle: {
         [NODE_STATE.EMPTY]: {
@@ -48,6 +75,7 @@ var View = {
 
     generateNodeView: function(grid){ 
         // let f, g, h, styles = {'font-size': '10px', 'text-anchor': 'begin'}
+        let x = 10, y = 10
         for(var i = 0; i < grid.length; i++){
             var row = grid[i]
             for(var j = 0; j < row.length; j++){
@@ -56,8 +84,13 @@ var View = {
                 // f = this.paper.text(i*this.nodeSize, j*this.nodeSize, "10"); f.attr(styles).transform("t5,7")
                 // g = this.paper.text(i*this.nodeSize, j*this.nodeSize, "0"); g.attr(fontStyle).attr({'text-anchor':'end',transform:'translate(50,6)'})
                 // h = this.paper.text(i*this.nodeSize, j*this.nodeSize, "0"); h.attr(fontStyle).attr({'text-anchor':'end',transform:'translate(50,44)'})
-                
+                let diffX = Math.abs(x - j), diffY = Math.abs(i - y)
+                let range = Math.sqrt(diffX*diffX + diffY*diffY)
+
                 rect.attr(this.nodeStyle[NODE_STATE.EMPTY])
+                let color = colors[Math.min(Math.floor(range), 9)]
+                rect.attr({fill: `rgb(${color[0]},${color[1]},${color[2]})`})
+                
                 row[j].view.rect = rect
                 // row[j].view.f    = f
                 // row[j].view.g    = g
@@ -65,7 +98,7 @@ var View = {
 
             }
         }
-        grid[1][0].view.rect.node.setAttribute('class', 'glowing')
+        // grid[1][0].view.rect.node.setAttribute('class', 'glowing')
         console.log(grid)
     },
     
@@ -205,3 +238,4 @@ var View = {
     }
     //#endregion
 }
+

@@ -1,5 +1,5 @@
 Todo:
-	☐ Change ChangeState to retrieve object instead
+	✔ Change ChangeState to retrieve object instead @done(19-11-06 14:35)
 	☐ Rework the pseudocode implementation
 		1. The scope should represent an object inside an object for easy code jump
 			ex 
@@ -22,8 +22,11 @@ Todo:
 			`}`
 		3. If loop -> push scope then push itself
 		4. If condition -> only push scope
+		☐ Add `verbose_mode` to decrease amount of *line jumps* ?
+			1. Priority 1 -> stops
+			2. Priority 0 -> skips
 	☐ Changing node in view is too hard because setNodeToState() is badly implemented
-	☐ NODE_STATE.START & END shouldn't be a real NODE_STATE, remove it later
+	✔ NODE_STATE.START & END shouldn't be a real NODE_STATE, remove it later @done(19-11-06 14:35)
 		change validation to this.startNode instead
 	☐ List of animations to be added:
 		☐ Show the neighbour
@@ -33,6 +36,27 @@ Todo:
 		☐ Calculate f,g,h animation
 		☐ Show preview
 			When hover a node, show something
-	☐ Add explanation below the pseudocode
+	✔ Add explanation below the pseudocode @done(19-11-06 14:35)
 	☐ Add dropdown to choose pseudocode
 		A* or Dijkstra
+	☐ Add methods for calculator
+		✘ GetNeighbour(index) @cancelled(19-11-06 14:36)
+
+Note:
+	Animation can be skipped if user uses AutoPlay
+	Queue or OpenSet? -> Queue
+
+	translate(-4px, 71px) scale(1.2) -> scale first, then move
+
+Modules:
+	☐ Membuat node berupa grid 20x20
+	☐ Node berubah warna menjadi hijau jika ditandai sebagai node awal
+	☐ Node berubah menjadi warna merah jika ditandai sebagai node akhir
+	☐ Node berubah menjadi warna abu-abu jika ditandai sebagai node yang tidak dapat dilalui
+	☐ Node berubah menjadi warna biru muda jika node possible untuk dilalui
+	☐ Node berubah menjadi warna biru gelap jika node sudah divisit/dilalui
+	☐ Membuat pathfinding menggunakan A* pada node grid yang sudah dibuat
+	☐ Menampilkan proses pathfind 1 per 1 dan bisa di next step / previous step
+	☐ Membuat tombol next & prev untuk step pathfind
+	☐ Menampilkan queue yang terjadi pada tiap step di sebelah kiri layar
+	☐ Menampilkan g, h, f pada tiap node

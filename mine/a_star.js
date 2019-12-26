@@ -14,8 +14,8 @@ Ex: line3 => node(5,5) is visited
  */
 // TODO: Make this happen
 var ChangeState = {
-    create: function(nodes, command){
-        return {executedLine: command}
+    create: function(changes, command){
+        return {executedLine: command, ...changes}
     }
 }
 
