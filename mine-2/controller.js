@@ -24,8 +24,8 @@ var Controller = StateMachine.create({
 })
 
 $.extend(Controller, {
-    numCols: 30,
-    numRows: 30,
+    numCols: 20,
+    numRows: 20,
     grids: [],
     startNode: undefined,
     endNode: undefined,
@@ -39,6 +39,10 @@ $.extend(Controller, {
 
         this.generateNode()
         
+        // console.log(this.grids.flat());
+        
+        View.generateNodeView(this.grids.flat())
+        return
         this.bindMouseEvent()
         this.setStartPos(this.grids[3][6])
         this.setEndPos(this.grids[15][6])
@@ -60,6 +64,7 @@ $.extend(Controller, {
         Calculator.onSortQueue.push(function(queue){
             View.sortQueue(queue)
         })
+
         Calculator.prototype = {
             get currentNode(){
                 return this._currentNode;
@@ -150,8 +155,6 @@ $.extend(Controller, {
             }
             this.grids.push(row)
         }
-        
-        View.generateNodeView(this.grids)
     },
 
     

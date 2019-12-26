@@ -30,39 +30,39 @@ var Calculator = {
 	onSortQueue: [], // ([nodes])
 	changeNodeState: function (node, state) {
 		node.state = state
-		triggerCallback(this.onChangeState, {node,state})
+		triggerCallback(this.onChangeState, {node, state})
 	},
 	addToQueue: function (node, toFront = false) {
 		if (toFront)
 			this.queue.unshift(node)
 		else
 			this.queue.push(node)
-		triggerCallback(this.onAddQueue, {node,toFront})
+		triggerCallback(this.onAddQueue, {node, toFront})
 	},
 	popQueue: function () {
 		this.currentNode = this.queue.shift()
 		triggerCallback(this.onPopQueue, {currentNode: this.currentNode})
 	},
-	sortQueue: function (sortArrayIndexes = undefined) {
+	sortQueue: function () {
 		this.queue.sort((a, b) => a.values.f - b.values.f)
 		triggerCallback(this.onSortQueue, {queue: this.queue})
 	},
-	sortQueueByIndex:function (sortArrayIndexes = undefined) {
+	sortQueueByIndex: function (sortArrayIndexes) {
 		let newQueue = []
-		for(var i = 0; i < change.prevIndexes.length; i++){
-				newQueue.push(calculator.queue[change.prevIndexes.indexOf(i)])
-		}
+		for (var i = 0; i < sortArrayIndexes.length; i++) 
+			newQueue.push(calculator.queue[sortArrayIndexes.indexOf(i)])
+		
 		this.queue = newQueue
 		triggerCallback(this.onSortQueue, {queue: this.queue})
 	},
-	addCommandsFromScope: (commands) => {
+	addCommandsFromScope: function (commands) {
 		this.nextCommandStack.unshift(commands)
 	},
 	//#endregion
 
 	onExecuteLine: [
-		function(param){CodePanel.highlighLine(param.state.executedLine.lineIndex)},
-		function(param){HistoryPanel.pushToHistory(param.state.explanation)}
+		function (param) {CodePanel.highlighLine(param.state.executedLine.lineIndex)},
+		function (param) {HistoryPanel.pushToHistory(param.state.explanation)}
 	], // Add highlight code callback here
 	operateNextLine: function () {
 
@@ -74,9 +74,11 @@ var Calculator = {
 		this.currentLine = this.getNextLine()
 		// console.log('Operating next line => ' + this.currentAlgorithm.pseudocode[this.currentLineIndex]);
 		state = this.currentLine.execute(this)
-		
+
 		this.stateHistory.push(state)
-		triggerCallback(this.onExecuteLine, {state})
+		triggerCallback(this.onExecuteLine, {
+			state
+		})
 	},
 	undoCommand: function () {
 		if (this.stateHistory.length <= 1) {
@@ -84,13 +86,15 @@ var Calculator = {
 			return
 		}
 		let currState = this.stateHistory.pop(),
-			prevState = this.stateHistory[this.stateHistory.length-1]
+			prevState = this.stateHistory[this.stateHistory.length - 1]
 		this.nextCommandStack.unshift(this.currentLine)
 		this.currentLine.undo(this, currState)
 
 		this.currentLine = prevState.executedLine
 
-		triggerCallback(this.onExecuteLine, {currentLine: this.currentLine})
+		triggerCallback(this.onExecuteLine, {
+			currentLine: this.currentLine
+		})
 	},
 
 
@@ -102,13 +106,17 @@ var Calculator = {
 	},
 
 	onSetAlgorithm: [
-		function(param){CodePanel.generateLine(param.algo.getPseudocodeLines())}
+		function (param) {
+			CodePanel.generateLine(param.algo.getPseudocodeLines())
+		}
 	],
 	setAlgorithm: function (algo) { // pass the astar variable here
 		this.currentAlgorithm = algo
 		if (algo.init) algo.init(this)
 		// TODO: move this callback to onSetAlgo
 		// CodePanel.generateLine(this.currentAlgorithm.pseudocode)
-		triggerCallback(this.onSetAlgorithm, {algo})
+		triggerCallback(this.onSetAlgorithm, {
+			algo
+		})
 	},
 }

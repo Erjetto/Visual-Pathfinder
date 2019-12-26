@@ -22,7 +22,7 @@ Todo:
 			`}`
 		3. If loop -> push scope then push itself
 		4. If condition -> only push scope
-		☐ Add `verbose_mode` to decrease amount of *line jumps* ?
+		✘ Add `verbose_mode` to decrease amount of *line jumps* ? @cancelled(19-12-26 20:14)
 			1. Priority 1 -> stops
 			2. Priority 0 -> skips
 	☐ Changing node in view is too hard because setNodeToState() is badly implemented

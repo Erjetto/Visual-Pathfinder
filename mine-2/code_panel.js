@@ -3,6 +3,8 @@ var CodePanel = {
     lines: [],
     activeLine: undefined,
     generateLine: function(lines){
+        console.log('generating lines');
+        
         this.panelNode.empty()
         lines.forEach(line => {
             let n = document.createElement('p')

@@ -25,28 +25,6 @@ var Calculator = {
 
     isFinished: false,
     isOperable: true, // To control the operation delay?
-    onExecuteLine: function(){
-        CodePanel.highlightLine(this.currentLineIndex)
-        // Call Controller and View?
-        if(this.isFinished){ // 
-            this.isOperable = false
-            alert('Calculator is finished')
-        }
-    },
-
-    getNextOperableLine: function(){
-        var line 
-        if (this.jumpToLineNum != undefined){ // jumpToLineNum is set by commands
-            line = this.currentAlgorithm.lines[this.jumpToLineNum]
-            this.currentLineIndex = this.jumpToLineNum
-            this.jumpToLineNum = undefined
-        } else {
-            do{   
-                line = this.currentAlgorithm.lines[++this.currentLineIndex]
-            } while(line.execute === undefined)
-        }
-        return line
-    },
 
     //#region Methods for Command to use
     algoInfo: {}, // Keep the data from algorithm, ex: loopIndex = 2
@@ -76,9 +54,13 @@ var Calculator = {
     },
     
     //#endregion
-
+    
+    // ----------------------------MAIN OPERATOR--------------------
+    /**
+     * Get next command. Also handle redo 
+     */
     operateNextLine: function(){
-        // if(this.isFirst) this.init()
+        
         
         if(!this.isOperable){
             console.log('The calculator is not operable');
@@ -86,11 +68,14 @@ var Calculator = {
         }
         this.currentLine = this.getNextOperableLine()
         // console.log('Operating next line => ' + this.currentAlgorithm.pseudocode[this.currentLineIndex]);
+        this.commandsStack.push(state)
+        
         state = this.currentLine.execute(this)
         this.onExecuteLine()
-        
-        this.commandsStack.push(state)
     },
+    /**
+     * Put the last executed line to next command stack
+     */
     undoCommand: function(){
         
         if(this.commandsStack.length <= 1){
@@ -104,12 +89,29 @@ var Calculator = {
         this.currentLineIndex = this.currentAlgorithm.lines.indexOf(this.currentLine)
         this.onExecuteLine(this)
     },
-    // redoCommand: function(){
-    //     this.currentLine = this.undoCommandsStack.pop()
-    //     change = this.currentLine.execute()
-    //     this.onExecuteLine(this)
-    //     this.commandsStack.push(change)
-    // },
+    // ----------------------------HELPERS-----------------------
+    onExecuteLine: function(){
+        CodePanel.highlightLine(this.currentLineIndex)
+        // Call Controller and View?
+        if(this.isFinished){ // 
+            this.isOperable = false
+            alert('Calculator is finished')
+        }
+    },
+
+    getNextOperableLine: function(){
+        var line 
+        if (this.jumpToLineNum != undefined){ // jumpToLineNum is set by commands
+            line = this.currentAlgorithm.lines[this.jumpToLineNum]
+            this.currentLineIndex = this.jumpToLineNum
+            this.jumpToLineNum = undefined
+        } else {
+            do{   
+                line = this.currentAlgorithm.lines[++this.currentLineIndex]
+            } while(line.execute === undefined)
+        }
+        return line
+    },
 
     init: function(){
         this.setAlgorithm(astar)
