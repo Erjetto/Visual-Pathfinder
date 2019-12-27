@@ -51,8 +51,9 @@ var Calculator = {
 		let newQueue = []
 		for (var i = 0; i < sortArrayIndexes.length; i++) 
 			newQueue.push(calculator.queue[sortArrayIndexes.indexOf(i)])
-		
-		this.queue = newQueue
+			
+		this.queue.splice(0,this.queue.length)
+		this.queue.push(newQueue)
 		triggerCallback(this.onSortQueue, {queue: this.queue})
 	},
 	addCommandsFromScope: function (commands) {
@@ -96,7 +97,6 @@ var Calculator = {
 			currentLine: this.currentLine
 		})
 	},
-
 
 	init: function () {
 		this.setAlgorithm(astar)

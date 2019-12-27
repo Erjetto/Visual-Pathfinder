@@ -26,8 +26,8 @@ Operation between calculator & view (and informations)
 // Initialize variable, get elements, etc.
 inits= [
     PlayPanel,  // Get buttons
-    // CodePanel,  // For code panel
-    // Calculator, // For algorithm
+    CodePanel,  // For code panel
+    Calculator, // For algorithm
     // View,       // For grid view
     View,
     Controller, // For time control?
