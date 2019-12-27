@@ -30,7 +30,6 @@ $.extend(Controller, {
     startNode: undefined,
     endNode: undefined,
 
-    //#region StateMachine Events
     //Asynchronous transition from `none` state to `ready` state.
     oninit: function() {
         // this.grid = new PF.Grid(numCols, numRows);
@@ -39,30 +38,35 @@ $.extend(Controller, {
 
         this.generateNode()
         
-        // console.log(this.grids.flat());
-        
         View.generateNodeView(this.grids.flat())
-        return
-        this.bindMouseEvent()
+        View.panel.selectAll('g')   // Bind all grid node event
+            .on('mousemove',    (d)=>this.nodeMouseMove(d))
+            .on('mousedown',    (d)=>this.nodeMouseDown(d))
+            .on('mouseup',      (d)=>this.nodeMouseUp(d))
+            .on('mouseenter',   (d)=>this.nodeMouseEnter(d))
+
+        // return
+        // this.bindMouseEvent()
         this.setStartPos(this.grids[3][6])
-        this.setEndPos(this.grids[15][6])
+        this.setEndPos(this.grids[10][6])
         
         PlayPanel.playButton.click($.proxy(this.onClickPlay, this))
         PlayPanel.backButton.click($.proxy(this.onClickBack, this))
         PlayPanel.forwardButton.click($.proxy(this.onClickForward, this))
 
         Calculator.onAddQueue.push(function(node, toFront=false){
-            View.addNodeToQueue(node, toFront)
+            // View.addNodeToQueue(node, toFront)
+            View.updateQueue()
         })
         Calculator.onPopQueue.push(function(node){
-            View.popQueue()
+            View.updateQueue()
         })
         Calculator.onChangeState.push(function(node, state){
             if(node == this.startNode || node == this.endNode) return
-            View.setStateToNode(node,state,true,true)
+            // View.setStateToNode(node,state,true,true)
         }.bind(this))
         Calculator.onSortQueue.push(function(queue){
-            View.sortQueue(queue)
+            View.updateQueue()
         })
 
         Calculator.prototype = {
@@ -70,9 +74,9 @@ $.extend(Controller, {
                 return this._currentNode;
             },
             set currentNode(v){
-                View.zoomNode(this._currentNode, false)
+                // View.zoomNode(this._currentNode, false)
                 this._currentNode = v
-                View.zoomNode(this._currentNode, true)
+                // View.zoomNode(this._currentNode, true)
             }
         }
         
@@ -160,22 +164,32 @@ $.extend(Controller, {
     
     setStartPos: function(node){
         if(this.startNode != undefined){
+            this.startNode.isStart = false
             this.setNodeState(this.startNode, NODE_STATE.EMPTY)
         }
         this.startNode = node
+        this.startNode.isStart = true
         this.setNodeState(this.startNode, NODE_STATE.START)
     },
     setEndPos: function(node){
         if(this.endNode != undefined){
+            this.endNode.isEnd = false
             this.setNodeState(this.endNode, NODE_STATE.EMPTY)
         }
         this.endNode = node
+        this.endNode.isEnd = true
         this.setNodeState(this.endNode, NODE_STATE.END)
     },
     
-    setNodeState: function(node, state, animateColor=false, animateZoom=false){ // Set state in Controller & View
+    setNodeState: function(node, state, animateColor=false, animateZoom=false, customColor=undefined){ // Set state in Controller & View
+        
         node.state = state
-        View.setStateToNode(node,state, animateColor, animateZoom)
+        // View.setStateToNode(node,state, animateColor, animateZoom)
+        View.scaleNode(node.gridX, node.gridY, 1.2, 1)
+        if(customColor)
+            View.changeNodeColor(node.gridX, node.gridY, customColor)
+        else 
+            View.changeNodeColorToState(node.gridX, node.gridY, state)
     },
     isAuto: false,
     intervalHandler: 0,
@@ -205,71 +219,117 @@ $.extend(Controller, {
         } else if(Controller.is('searching')){
             Calculator.operateNextLine()
         }
-        
+    },
 
+    // getNodeCoordinateById: function(id){
+    //     let split = id.split('-')
+    //     return {x: split[1], y: split[2]}
+    // },
+    nodeMouseUp: function(node){
+        if(this.can('rest'))this.rest()
     },
-    mouseup: function(event){
-        // console.log(event);
-        if(this.can('rest'))
-            this.rest()
-    },
-    mousedown: function(event){
-        if(event.offsetY < 75) return
-        if(this.current == 'ready'){
-            let coor = View.paperToGrid(event.offsetX, event.offsetY)
-            let currNode = this.grids[coor.y][coor.x]
-            switch(currNode.state){
-                case NODE_STATE.START: this.dragStart();
-                    break;
-                case NODE_STATE.END: this.dragEnd()
-                    break;
-                case NODE_STATE.EMPTY: this.drawWall(); this.setNodeState(currNode, NODE_STATE.BLOCKED, true, true)
-                    break;
-                case NODE_STATE.BLOCKED: this.eraseWall(); this.setNodeState(currNode, NODE_STATE.EMPTY, true, true)
-                    break;
+    nodeMouseDown: function(node){
+        if(node.isStart) this.dragStart()
+        else if(node.isEnd) this.dragEnd()
+        else{
+            switch(node.state){
+            case NODE_STATE.EMPTY: this.drawWall(); this.setNodeState(node, NODE_STATE.BLOCKED, true, true)
+                break;
+            case NODE_STATE.BLOCKED: this.eraseWall(); this.setNodeState(node, NODE_STATE.EMPTY, true, true)
+                break;
             }
-            // View.addNodeToQueue(currNode)
         }
+        
     },
-    mousemove: function(event){
-        let coor = View.paperToGrid(event.offsetX, event.offsetY)
-        if(coor.x < 0 || coor.y < 0) return
-        let currNode = this.grids[coor.y][coor.x]
+    nodeMouseMove: function(node){
+        
+    },
+    nodeMouseEnter: function(node){
         switch(this.current){
-            case 'draggingStart':
-                if(this.startNode != currNode && currNode.state == NODE_STATE.EMPTY){
-                    this.setNodeState(this.startNode, NODE_STATE.EMPTY)
-                    this.startNode = currNode
-                    this.setNodeState(this.startNode, NODE_STATE.START)
-                }
-                break
-            case 'draggingEnd':
-                if(this.endNode != currNode && currNode.state == NODE_STATE.EMPTY){
-                    this.setNodeState(this.endNode, NODE_STATE.EMPTY)
-                    this.endNode = currNode
-                    this.setNodeState(this.endNode, NODE_STATE.END)
-                }
-                break
-            case 'erasingWall':
-                if(currNode.state == NODE_STATE.BLOCKED){
-                    this.setNodeState(currNode, NODE_STATE.EMPTY, true, true)
-                }
-                break
-            case 'drawingWall':
-                if(currNode.state == NODE_STATE.EMPTY){
-                    this.setNodeState(currNode, NODE_STATE.BLOCKED, true, true)
-                }
-                break
+        case 'draggingStart':
+            if(node.isEnd) break
+            if(node.state != NODE_STATE.EMPTY) break
+            this.setStartPos(node)
+            break
+        case 'draggingEnd':
+            if(node.isStart) break
+            if(node.state != NODE_STATE.EMPTY) break
+            this.setEndPos(node)
+            break
+        case 'erasingWall':
+            if(node.state == NODE_STATE.BLOCKED){
+                this.setNodeState(node, NODE_STATE.EMPTY, true, true)
+            }
+            break
+        case 'drawingWall':
+            if(node.state == NODE_STATE.EMPTY){
+                this.setNodeState(node, NODE_STATE.BLOCKED, true, true)
+            }
+            break
         }
     },
-    bindMouseEvent: function(){
-        $('#draw_area').mousedown($.proxy(this.mousedown, this));
-        $(window)
-            .mousemove($.proxy(this.mousemove, this))
-            .mouseup($.proxy(this.mouseup, this));
-    },
+    // mouseup: function(event){
+    //     // console.log(event);
+    //     if(this.can('rest'))
+    //         this.rest()
+    // },
+    // mousedown: function(event){
+    //     if(event.offsetY < 75) return
+    //     if(this.current == 'ready'){
+    //         let coor = View.paperToGrid(event.offsetX, event.offsetY)
+    //         let currNode = this.grids[coor.y][coor.x]
+    //         switch(currNode.state){
+    //             case NODE_STATE.START: this.dragStart();
+    //                 break;
+    //             case NODE_STATE.END: this.dragEnd()
+    //                 break;
+    //             case NODE_STATE.EMPTY: this.drawWall(); this.setNodeState(currNode, NODE_STATE.BLOCKED, true, true)
+    //                 break;
+    //             case NODE_STATE.BLOCKED: this.eraseWall(); this.setNodeState(currNode, NODE_STATE.EMPTY, true, true)
+    //                 break;
+    //         }
+    //         // View.addNodeToQueue(currNode)
+    //     }
+    // },
+    // mousemove: function(event){
+    //     let coor = View.paperToGrid(event.offsetX, event.offsetY)
+    //     if(coor.x < 0 || coor.y < 0) return
+    //     let currNode = this.grids[coor.y][coor.x]
+    //     switch(this.current){
+    //         case 'draggingStart':
+    //             if(this.startNode != currNode && currNode.state == NODE_STATE.EMPTY){
+    //                 this.setNodeState(this.startNode, NODE_STATE.EMPTY)
+    //                 this.startNode = currNode
+    //                 this.setNodeState(this.startNode, NODE_STATE.START)
+    //             }
+    //             break
+    //         case 'draggingEnd':
+    //             if(this.endNode != currNode && currNode.state == NODE_STATE.EMPTY){
+    //                 this.setNodeState(this.endNode, NODE_STATE.EMPTY)
+    //                 this.endNode = currNode
+    //                 this.setNodeState(this.endNode, NODE_STATE.END)
+    //             }
+    //             break
+    //         case 'erasingWall':
+    //             if(currNode.state == NODE_STATE.BLOCKED){
+    //                 this.setNodeState(currNode, NODE_STATE.EMPTY, true, true)
+    //             }
+    //             break
+    //         case 'drawingWall':
+    //             if(currNode.state == NODE_STATE.EMPTY){
+    //                 this.setNodeState(currNode, NODE_STATE.BLOCKED, true, true)
+    //             }
+    //             break
+    //     }
+    // },
+    // bindMouseEvent: function(){
+    //     $('#draw_area').mousedown($.proxy(this.mousedown, this));
+    //     $(window)
+    //         .mousemove($.proxy(this.mousemove, this))
+    //         .mouseup($.proxy(this.mouseup, this));
+    // },
     //#endregion
-    step: function(){ // ?
+    // step: function(){ // ?
 
-    }
+    // }
 })
