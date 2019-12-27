@@ -25,18 +25,14 @@ Operation between calculator & view (and informations)
 
 // Initialize variable, get elements, etc.
 inits= [
+    View,       // For grid view
     PlayPanel,  // Get buttons
     CodePanel,  // For code panel
     Calculator, // For algorithm
-    // View,       // For grid view
-    View,
     Controller, // For time control?
 ]
 
 window.onload = function() {
-    if (!Raphael.svg) {
-        window.location = './notsupported.html';
-    }
 
     // suppress select events
     $(window).bind('selectstart', function(event) {

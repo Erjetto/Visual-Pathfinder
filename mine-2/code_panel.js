@@ -13,6 +13,7 @@ var CodePanel = {
             this.panelNode.append(n)
             this.lines.push(n)
         })
+        
         this.activeLine = this.lines[0]
     },
     highlightLine: function(index){

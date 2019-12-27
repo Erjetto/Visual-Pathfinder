@@ -53,21 +53,21 @@ $.extend(Controller, {
         PlayPanel.playButton.click($.proxy(this.onClickPlay, this))
         PlayPanel.backButton.click($.proxy(this.onClickBack, this))
         PlayPanel.forwardButton.click($.proxy(this.onClickForward, this))
-
-        Calculator.onAddQueue.push(function(node, toFront=false){
-            // View.addNodeToQueue(node, toFront)
-            View.updateQueue()
-        })
-        Calculator.onPopQueue.push(function(node){
-            View.updateQueue()
-        })
-        Calculator.onChangeState.push(function(node, state){
-            if(node == this.startNode || node == this.endNode) return
-            // View.setStateToNode(node,state,true,true)
-        }.bind(this))
-        Calculator.onSortQueue.push(function(queue){
-            View.updateQueue()
-        })
+        
+        // Calculator.onAddQueue.push(function(node, toFront=false){
+        //     // View.addNodeToQueue(node, toFront)
+        //     View.updateQueue()
+        // })
+        // Calculator.onPopQueue.push(function(node){
+        //     View.updateQueue()
+        // })
+        // Calculator.onChangeState.push(function(node, state){
+        //     if(node == this.startNode || node == this.endNode) return
+        //     // View.setStateToNode(node,state,true,true)
+        // }.bind(this))
+        // Calculator.onSortQueue.push(function(queue){
+        //     View.updateQueue()
+        // })
 
         Calculator.prototype = {
             get currentNode(){
