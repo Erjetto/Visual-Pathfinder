@@ -24,37 +24,28 @@ var Calculator = {
 
 	//#region Methods for Command to use
 	algoInfo: {}, // Keep the data from algorithm, ex: loopIndex = 2
-	onChangeState: [], // (node, state)
-	onAddQueue: [], // (node, toFront)
-	onPopQueue: [], // (node)
-	onSortQueue: [], // ([nodes])
 	changeNodeState: function (node, state) {
 		node.state = state
-		triggerCallback(this.onChangeState, {node, state})
 	},
 	addToQueue: function (node, toFront = false) {
 		if (toFront)
 			this.queue.unshift(node)
 		else
 			this.queue.push(node)
-		triggerCallback(this.onAddQueue, {node, toFront})
 	},
 	popQueue: function () {
 		this.currentNode = this.queue.shift()
-		triggerCallback(this.onPopQueue, {currentNode: this.currentNode})
 	},
 	sortQueue: function () {
 		this.queue.sort((a, b) => a.values.f - b.values.f)
-		triggerCallback(this.onSortQueue, {queue: this.queue})
 	},
 	sortQueueByIndex: function (sortArrayIndexes) {
 		let newQueue = []
 		for (var i = 0; i < sortArrayIndexes.length; i++) 
 			newQueue.push(calculator.queue[sortArrayIndexes.indexOf(i)])
-			
+
 		this.queue.splice(0,this.queue.length)
 		this.queue.push(newQueue)
-		triggerCallback(this.onSortQueue, {queue: this.queue})
 	},
 	addCommandsFromScope: function (commands) {
 		this.nextCommandStack.unshift(commands)
@@ -62,6 +53,7 @@ var Calculator = {
 	//#endregion
 
 	onExecuteLine: [
+		function (param) {View.onExecuteLine(param)},
 		function (param) {CodePanel.highlighLine(param.state.executedLine.lineIndex)},
 		function (param) {HistoryPanel.pushToHistory(param.state.explanation)}
 	], // Add highlight code callback here
@@ -75,7 +67,7 @@ var Calculator = {
 		this.currentLine = this.getNextLine()
 		// console.log('Operating next line => ' + this.currentAlgorithm.pseudocode[this.currentLineIndex]);
 		state = this.currentLine.execute(this)
-
+		
 		this.stateHistory.push(state)
 		triggerCallback(this.onExecuteLine, {
 			state
@@ -96,6 +88,11 @@ var Calculator = {
 		triggerCallback(this.onExecuteLine, {
 			currentLine: this.currentLine
 		})
+	},
+
+	getNextLine: function(){
+		if(this.nextCommandStack.length > 0) return this.nextCommandStack.shift()
+
 	},
 
 	init: function () {
