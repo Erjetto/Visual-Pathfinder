@@ -100,6 +100,7 @@ var astar = {
 
 						let explanation = this.explanation(calculator)
 						return ChangeState.create({
+							node : calculator.currentNode,
 							explanation
 						})
 					},
@@ -131,6 +132,7 @@ var astar = {
 							prevIdx = -1
 						} else {
 							prevIdx = calculator.algoInfo['loopNeighbourIndex']
+							calculator.addCommandsFromScope(this)
 							calculator.addCommandsFromScope(this.scope)
 							addedCommands = this.scope.length
 						}

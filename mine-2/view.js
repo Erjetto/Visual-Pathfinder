@@ -205,6 +205,45 @@ var View = {
 	// 	)
 	// },
 
+	onExecuteLine: function(state){
+		this.updateQueue()
+		switch(state.pseudocode){
+			case 'queue = {start}':
+				break
+			case 'while queue is not empty:':
+				break
+			case 'visited = queue.pop()':
+				break
+			case 'set visited to closed':
+				if(!state.node.isStart){
+					this.changeNodeColorToState(state.node.gridX, state.node.gridY, NODE_STATE.CLOSED, true)
+				}
+				break
+			case 'for each neighbour in visited.neighbours:':
+				break
+			case 'if neighbour.state is closed or opened:':
+				break
+			case 'continue':
+				break
+			case 'set its parent to visited':
+				break
+			case 'if neighbour is an endpoint:':
+				break
+			case 'return neighbour':
+				break
+			case 'calculate f, g & h':
+				break
+			case 'set neighbour state to opened':
+				break
+			case 'add neighbour to openSet':
+				break
+			case 'sort queue by the f value':
+				break
+			case 'end':
+				break
+		}
+	},
+
 	showNodeValue: function(gridX, gridY){ // ex: #grid(0,10)
 		this.panel.select(`g#grid-${gridX}-${gridY}`).selectAll('text')
 			.style('opacity', '1')
