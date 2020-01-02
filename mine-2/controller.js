@@ -44,6 +44,7 @@ $.extend(Controller, {
             .on('mousedown',    (d)=>this.nodeMouseDown(d))
             .on('mouseup',      (d)=>this.nodeMouseUp(d))
             .on('mouseenter',   (d)=>this.nodeMouseEnter(d))
+        View.queueArray = Calculator.queue
 
         // return
         // this.bindMouseEvent()
@@ -128,6 +129,7 @@ $.extend(Controller, {
                 
             }
         }
+        Calculator.isOperable = true
         this.search()
     },
     onrestart: function(){
@@ -198,7 +200,7 @@ $.extend(Controller, {
         this.isAuto = !this.isAuto
         if(this.isAuto){
             this.intervalHandler = setInterval(this.onClickForward.bind(this), 200)
-            // console.log('AutoPlaying');
+            console.log('AutoPlaying');
             PlayPanel.playButton.text('Pause')
         } else {
             PlayPanel.playButton.text('Play')
@@ -212,7 +214,7 @@ $.extend(Controller, {
         }
     },
     onClickForward: function(event){
-        // console.log('forwarding');
+        console.log('forwarding');
         
         if(Controller.is('ready')){ // If its the first play
             Controller.start()

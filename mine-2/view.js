@@ -205,50 +205,73 @@ var View = {
 	// 	)
 	// },
 
-	onExecuteLine: function(state){
-		this.updateQueue()
-		switch(state.pseudocode){
+	onExecuteLine: function(param){
+		let node = param.state.node
+		let neighbour = param.state.neighbour
+		switch(param.state.executedLine.pseudocode){
 			case 'queue = {start}':
+					this.updateQueue()
 				break
 			case 'while queue is not empty:':
 				break
-			case 'visited = queue.pop()':
+			case 'visited = queue.first()':
+					this.updateQueue()
 				break
 			case 'set visited to closed':
-				if(!state.node.isStart){
-					this.changeNodeColorToState(state.node.gridX, state.node.gridY, NODE_STATE.CLOSED, true)
+				if(!node.isStart){
+					this.changeNodeColorToState(node.gridX, node.gridY, NODE_STATE.CLOSED, true)
 				}
 				break
 			case 'for each neighbour in visited.neighbours:':
+				if(neighbour)
+					this.scaleNode(neighbour.gridX, neighbour.gridY, 1, 1.2, 400)
 				break
-			case 'if neighbour.state is closed or opened:':
+			case 'if neighbour.state is either closed, opened, or wall:':
 				break
 			case 'continue':
+				this.scaleNode(neighbour.gridX, neighbour.gridY, 1.2, 1, 400)
 				break
-			case 'set its parent to visited':
+			case 'set neighbour\'s parent to visited node':
 				break
 			case 'if neighbour is an endpoint:':
 				break
 			case 'return neighbour':
 				break
 			case 'calculate f, g & h':
+				let x = neighbour.gridX
+				let y = neighbour.gridY
+				this.panel.select(`g#grid-${x}-${y}`).select('text#g').text(neighbour.values.g.toFixed(1))
+				this.panel.select(`g#grid-${x}-${y}`).select('text#h').text(neighbour.values.h.toFixed(1))
+				this.panel.select(`g#grid-${x}-${y}`).select('text#f').text(neighbour.values.f.toFixed(1))
+				this.showNodeValue(x, y, true)
 				break
 			case 'set neighbour state to opened':
+				this.changeNodeColorToState(neighbour.gridX, neighbour.gridY, NODE_STATE.OPENED, true)
 				break
 			case 'add neighbour to openSet':
+				this.updateQueue()
+				this.scaleNode(neighbour.gridX, neighbour.gridY, 1.2, 1, 400)
 				break
 			case 'sort queue by the f value':
+				this.updateQueue()
 				break
 			case 'end':
 				break
 		}
 	},
 
-	showNodeValue: function(gridX, gridY){ // ex: #grid(0,10)
-		this.panel.select(`g#grid-${gridX}-${gridY}`).selectAll('text')
-			.style('opacity', '1')
-			.transition().delay(1000).duration(500)
-			.style('opacity', '0.6')
+	showNodeValue: function(gridX, gridY, doesShow){ // ex: #grid(0,10)
+		if(doesShow)
+			this.panel.select(`g#grid-${gridX}-${gridY}`).selectAll('text')
+				.style('opacity', '1')
+				.transition().duration(500)
+				.style('opacity', '0.6')
+		else 
+			this.panel.select(`g#grid-${gridX}-${gridY}`).selectAll('text')
+				.transition().duration(500)
+				.style('opacity', '0')
+
+		
 	},
 
 	scaleNode: function(gridX, gridY, init=1, scale=1, dur=200){
@@ -299,7 +322,7 @@ var View = {
 		rects.append('text') // g
 			.text('15')
 			.attr('id', 'g')
-			.style('fill','white')
+			.style('fill','grey')
 			.attr('text-anchor', 'start')
 			.attr('font-size', 'small')
 			.attr('transform', `translate(${padding}, ${13 + padding})`)
@@ -308,7 +331,7 @@ var View = {
 		rects.append('text') // h
 			.text('15')
 			.attr('id', 'h')
-			.style('fill','white')
+			.style('fill','grey')
 			.attr('font-size', 'small')
 			.attr('text-anchor', 'end')
 			.attr('transform', `translate(${70-padding}, ${13 + padding})`)

@@ -2,6 +2,10 @@ var CodePanel = {
     panelNode: undefined,
     lines: [],
     activeLine: undefined,
+
+    init: function(){
+        this.panelNode = $('.codes_panel') // Get panel
+    },
     generateLine: function(lines){
         console.log('generating lines');
         
@@ -21,27 +25,32 @@ var CodePanel = {
         this.activeLine = this.lines[index]
         this.activeLine.className = 'code_line active_line'
     },
-
-    init: function(){
-        this.panelNode = $('.codes_panel') // Get panel
-    }
 }
 
 var HistoryPanel = {
     panelNode: undefined,
+    deletedPanelNode: undefined,
     lines: [],
 
     pushToHistory: function(str){
+        
         $('<li/>', {
-            class:'animate-list-out',
+            class:'animate-list-enter',
             text: str
-        }).appendTo(this.panelNode)
+        }).prependTo(this.panelNode)
     },
-    popHistory: function(){
-        this.panelNode.first()
+    popHistory: function(){        
+        this.panelNode.children(":first").appendTo(this.deletedPanelNode)
+        .removeClass('animate-list-enter')
+        .addClass('animate-list-out')
+        .delay(200)
+        .queue(function(){$(this).remove().dequeue()})
+        
+        
     },
 
     init: function(){
         this.panelNode = $('.history-list')
+        this.deletedPanelNode = $('.deleted-history-list')
     }
 }

@@ -85,7 +85,7 @@ body{
 
 .details__header{
     padding: 8px;
-    flex: 0 0 45px;
+    flex: 0 0 30px;
 }
 
 .history-list{
@@ -93,8 +93,12 @@ body{
     overflow-y: auto;
     flex: 1 0 200px;
 }
+.deleted-history-list{
+    padding: 8px;
+    flex: 0;
+}
 
-.history-list > li{
+.history-list > li, .deleted-history-list > li{
     position: relative;
     margin-bottom: 4px;
     padding: 4px;

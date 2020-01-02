@@ -27,6 +27,7 @@ Operation between calculator & view (and informations)
 inits= [
     View,       // For grid view
     PlayPanel,  // Get buttons
+    HistoryPanel,  // For history panel
     CodePanel,  // For code panel
     Calculator, // For algorithm
     Controller, // For time control?
