@@ -28,10 +28,10 @@ Todo:
 	✔ Changing node in view is too hard because setNodeToState() is badly implemented @done(19-12-27 20:58)
 	✔ NODE_STATE.START & END shouldn't be a real NODE_STATE, remove it later @done(19-11-06 14:35)
 		change validation to this.startNode instead
-	☐ List of animations to be added:
+	✔ List of animations to be added: @done(20-01-02 17:40)
 		✘ Show the neighbour @cancelled(19-12-27 20:58)
 			Glow or scale animation?
-		☐ Set parent visited animation
+		✘ Set parent visited animation @cancelled(20-01-02 17:40)
 			Is this neccessary?
 		✔ Calculate f,g,h animation @done(19-12-27 20:58)
 		✔ Show preview @done(19-12-27 20:58)
@@ -39,7 +39,7 @@ Todo:
 	✔ Add explanation below the pseudocode @done(19-11-06 14:35)
 	☐ Add dropdown to choose pseudocode
 		A* or Dijkstra
-	☐ Add methods for calculator
+	✔ Add methods for calculator @done(20-01-02 17:40)
 		✘ GetNeighbour(index) @cancelled(19-11-06 14:36)
 
 Note:

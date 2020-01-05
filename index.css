@@ -90,7 +90,7 @@ body{
 
 .history-list{
     padding: 8px;
-    overflow-y: auto;
+    overflow-y: hidden;
     flex: 1 0 200px;
 }
 .deleted-history-list{
