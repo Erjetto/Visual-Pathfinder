@@ -96,6 +96,7 @@ $.extend(Controller, {
     onstart: function(){
         // Initialize some before start searching
         Calculator.startNode = this.startNode
+        this.startNode.parent = this.startNode
         Calculator.endNode = this.endNode
         Calculator.grids = this.grids
         // set neighbours
@@ -129,7 +130,7 @@ $.extend(Controller, {
                 
             }
         }
-        Calculator.isOperable = true
+        Calculator.firstMove()
         this.search()
     },
     onrestart: function(){
@@ -214,7 +215,7 @@ $.extend(Controller, {
         }
     },
     onClickForward: function(event){
-        console.log('forwarding');
+        // console.log('forwarding');
         
         if(Controller.is('ready')){ // If its the first play
             Controller.start()

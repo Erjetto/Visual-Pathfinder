@@ -34,31 +34,61 @@ var Calculator = {
 			this.queue.push(node)
 	},
 	shiftQueue: function () {
-		this.currentNode = this.queue.shift()
+		return this.queue.shift()
 	},
 	popQueue: function () {
-		this.currentNode = this.queue.pop()
+		return this.queue.pop()
 	},
 	sortQueue: function () {
 		this.queue.sort((a, b) => (a.values.f - b.values.f))
 	},
 	sortQueueByIndex: function (sortArrayIndexes) {
 		let newQueue = []
+		console.log(sortArrayIndexes);
+		
 		for (var i = 0; i < sortArrayIndexes.length; i++) 
-			newQueue.push(calculator.queue[sortArrayIndexes.indexOf(i)])
-
+			newQueue.push(this.queue[sortArrayIndexes.indexOf(i)])
+		console.log(newQueue);
+		
 		this.queue.splice(0,this.queue.length)
-		this.queue.push(newQueue)
+		this.queue.push(...newQueue)
 	},
 	addCommandsFromScope: function (commands) {
 		this.nextCommandStack.unshift(...commands)
 	},
+	setFinished: function(isFinished){
+		this.isFinished = isFinished
+		// this.nextCommandStack.splice(0, this.nextCommandStack.length)
+	},
 	//#endregion
+	getPathFromStartToEnd: function(start = null, end = null){
+		if(start == null) start = this.startNode
+		if(end == null) end = this.endNode
+		
+		let nodes = [end]
+		let currNode = end
+		while(currNode.parent != currNode){
+			nodes.unshift(currNode.parent)
+			currNode = currNode.parent
+		}
+		return nodes
+	},
 
+	firstMove: function(){
+		this.isOperable = true
+		this.startNode.isStart = true
+		this.endNode.isEnd = true
+	},
 	onExecuteLine: [
+		// () => console.log(Calculator.algoInfo),
 		function (param) {View.onExecuteLine(param)},
 		function (param) {
-			CodePanel.highlightLine(param.state.executedLine.lineIndex)
+			// if(param.type == 'undo')
+			// console.log(Calculator.currentLine);
+			
+			CodePanel.highlightLine(Calculator.currentLine.lineIndex)
+			// else
+			// 	CodePanel.highlightLine(param.state.executedLine.lineIndex)
 		},
 		function (param) {
 			if(param.type == 'undo')
@@ -71,6 +101,10 @@ var Calculator = {
 	], // Add highlight code callback here
 	operateNextLine: function () {
 		
+		if (this.isFinished) {
+			console.log('No more moves');
+			return
+		}
 		if (!this.isOperable) {
 			console.log('The calculator is not operable');
 			return
@@ -85,7 +119,7 @@ var Calculator = {
 		state = this.currentLine.execute(this)
 		
 		this.stateHistory.push(state)
-		console.log(state);
+		// console.log(state);
 		
 		triggerCallback(this.onExecuteLine, {
 			state
@@ -103,9 +137,9 @@ var Calculator = {
 
 		if(prevState)
 			this.currentLine = prevState.executedLine
-		console.log('State from undo:', currState);
+		// console.log('State from undo:', currState);
 		
-		triggerCallback(this.onExecuteLine, {type:'undo', state: prevState})
+		triggerCallback(this.onExecuteLine, {type:'undo', state: prevState, prevState: currState})
 	},
 
 	init: function () {
