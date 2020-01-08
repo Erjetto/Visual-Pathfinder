@@ -1,12 +1,23 @@
 *{
     padding: 0;
     margin: 0;
+    position: relative;
 }
 
 body{
     display: flex;
     width: 100vw;
     height: 100vh;
+    font-size: 1rem;
+    overflow: hidden;
+    
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
 }
 
 .center_content{
@@ -15,26 +26,29 @@ body{
     justify-content: center;
 }
 
-/*------------------------------------------------------------*/
+/*LEFT PANEL STYLING*/
 .main__left{
-    flex: 0 0 450px;
+    flex: 0 0 500px;
     background-color: aliceblue;
     
     display: flex;
     flex-flow: column;
+
+    box-shadow: -1px 0px 8px 1px grey;
+    z-index: 999;
 }
 
 .codes_panel{
-    flex: 0 0 350px;
-    background-color: brown;
+    flex: 1 0 400px;
+    background-color: burlywood;
     
     display: flex;
     flex-flow: column;
     padding: 8px 0;
+    font-size: 1rem;
 }
 .code_line{
-    padding: 4px 8px;
-    /* font-size: 125%; */
+    padding: 1px 8px;
     font-family: 'Courier New', Courier, monospace
 }
 
@@ -44,16 +58,16 @@ body{
 }
 
 .buttons_panel{
-    flex: 0 0 100px;
+    flex: 0 0 40px;
     background-color: grey;
     
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
+    align-content: flex-start;
     
 }
 .control_button{
-    height: 100px;
-    /* flex: 1; */
+    font-size: 12px;
 }
 .control_button:hover{
     background-color: rgba(0,0,0,0.2);
@@ -62,13 +76,67 @@ body{
     fill: #333333;
 }
 
+
 .details_panel{
-    
+    flex: 1 1 50%;
+    display: flex;
+    flex-flow: column;
 }
 
+.details__header{
+    padding: 8px;
+    flex: 0 0 30px;
+}
+
+.history-list{
+    padding: 8px;
+    overflow-y: hidden;
+    flex: 1 0 200px;
+}
+.deleted-history-list{
+    padding: 8px;
+    flex: 0;
+}
+
+.history-list > li, .deleted-history-list > li{
+    position: relative;
+    margin-bottom: 4px;
+    padding: 4px;
+    border-bottom: 1px solid lightgrey;
+    transition: background-color,transform 0.1s linear;
+    /* border-radius: 8px; */
+}
+.history-list > li:hover{
+    background-color: lightgray;
+    /* color: white; */
+}
+
+.animate-list-enter{
+    animation: enter_animation 0.3s normal ease-out;
+}
+
+.animate-list-out{
+    animation: enter_animation 0.3s forwards reverse ease-in;
+}
+
+@keyframes enter_animation{
+    0%{
+        left: -100%;
+        opacity: 0.3;
+    }
+    50%{
+        opacity: 0.75;
+    }
+    100%{
+        left: 0;
+        position: relative;
+    }
+}
+
+/* GRID STYLING */
 .main__right{
     flex: 1 1;
-    background-color: burlywood;
+    background-color: white;
 
     display: flex;
     flex-flow: column;
@@ -90,6 +158,40 @@ body{
     flex: 1;
 }
 
+.gold{
+    fill: yellow
+}
 
+.glowing{
+    fill: yellow;
+    animation: glow 1s infinite ease-in-out;
+    z-index: 99;
+    transform-origin: center center;
+}
+
+@keyframes empty-glow{
+    0%{ fill: white; transform: scale(1) }
+    50%{ fill: yellow; transform: scale(1.2) }
+    100%{ fill: white; transform: scale(1) }
+}
+
+@keyframes open-glow{
+    0%{ fill: white; }
+    50%{ fill: yellow }
+    100%{ fill: white }
+}
+
+@media screen and (max-width: 1367px){
+    html{
+        font-size: 0.7rem;
+    }
+
+    .main__left{
+        flex: 0 0 350px;
+    }
+    .codes_panel{
+        flex: 0 0 350px;
+    }
+}
 
 

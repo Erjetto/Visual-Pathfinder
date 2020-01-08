@@ -1,25 +1,24 @@
 var PlayPanel = {
     panel: undefined,
-
+    buttonAttributes: {
+        css: {
+            width:'100px'
+        },
+        class: 'control_button'
+    },
     init: function(){
         this.panel = $('.buttons_panel')
         this.backButton =  $('<button/>', {
-            css: {
-                width:'100px'
-            },
-            text: 'Previous'
+            text: 'Previous',
+            ...this.buttonAttributes
         }).appendTo(this.panel)
         this.playButton = $('<button/>', {
-            css: {
-                width:'100px'
-            },
-            text: 'Play'
+            text: 'Play',
+            ...this.buttonAttributes
         }).appendTo(this.panel)
         this.forwardButton =  $('<button/>', {
-            css: {
-                width:'100px'
-            },
-            text: 'Next'
+            text: 'Next',
+            ...this.buttonAttributes
         }).appendTo(this.panel)
     }
 }

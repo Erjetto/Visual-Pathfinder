@@ -12,117 +12,203 @@ Ex: line3 => node(5,5) is visited
  * Contains the node that is changed and the line that is executed
  * 
  */
+// TODO: Make this happen
 var ChangeState = {
-    create: function(nodes, command){
-        return {targetedNodes: nodes, executedLine: command}
+    create: function(changes, command){
+        return {executedLine: command, ...changes}
     }
 }
 
 var astar = {
+    
+    init: function(calculator){
+        calculator.algoInfo['loopNeighbourIndex'] = -1
+    },
     // Every line has its object, including 'do', for indexing reason
     lines: [ 
         { // 'openSet = {start}',
             execute: function(calculator){ //
                 // Put start node to queue
-                let change = [] 
+                 
                 calculator.setJumpToLineNum(2)
-                change.push(calculator.startNode)
+                
                 calculator.addToQueue(calculator.startNode)
 
-                return ChangeState.create(change, this)
+                return {executedLine: this}
             },
             undo: function(calculator, change){
-                // 
+                calculator.popQueue()
             }
         },
         { // 'do:',
         },
         { // '    visited = openSet.pop()',
             execute: function(calculator){
-                // Remove the first in queue
-                // If node is a normal node then
-                //     Highlight the node on the map
-                //     Change state to closed
-                
-                let change = [] // contains prev & next node
-                change.push(calculator.currentNode)
+                let prev = calculator.currentNode
                 calculator.popQueue()
-                change.push(calculator.currentNode)
                 
                 console.log('visited = ')
                 console.log(calculator.currentNode);
-                return ChangeState.create(change, this)
+                return {prev: prev, currNode: calculator.currentNode, executedLine: this}
             },
             undo: function(calculator, change){
-                calculator.addToQueue(change.targetedNodes[1], true)
-                calculator.currentNode = change.targetedNodes[0]
+                calculator.addToQueue(change.prev, true)
+                calculator.currentNode = change.prev
             }
         },
         { // '    set visited to closed',
             execute: function(calculator){
-                let change = [] 
-                if(calculator.currentNode == NODE_STATE.OPENED)
-                calculator.changeNodeState(calculator.currentNode, NODE_STATE.CLOSED)
-                return ChangeState.create(change, this)
+                // if(calculator.currentNode.state == NODE_STATE.OPENED)
+                    calculator.changeNodeState(calculator.currentNode, NODE_STATE.CLOSED)
+                return {executedLine: this}
             },
             undo: function(calculator, change){
-                if(calculator.currentNode == NODE_STATE.CLOSED)
-                calculator.changeNodeState(calculator.currentNode, NODE_STATE.OPENED)
+                // if(calculator.currentNode.state == NODE_STATE.CLOSED)
+                    calculator.changeNodeState(calculator.currentNode, NODE_STATE.OPENED)
             }            
         },
         { // '    for each neighbour in visited.neighbour:',
+            execute: function(calculator){ // Add index, or end the loop
+                let prevIdx
+                if(calculator.algoInfo['loopNeighbourIndex'] >= calculator.currentNode.neighbours.length - 1){
+                    calculator.algoInfo['loopNeighbourIndex'] = -1
+                    prevIdx = -1
+                    calculator.setJumpToLineNum(14) // sort.....
+                }
+                else{
+                    prevIdx = calculator.algoInfo['loopNeighbourIndex']++
+                }
+                
+
+                return {prevIdx: prevIdx,executedLine: this}
+            }, undo: function(calculator, change){
+                calculator.algoInfo['loopNeighbourIndex'] = change.prevIdx
+                
+            } 
+        },
+        { // '        if neighbour.state is closed or opened or blocked:',
             execute: function(calculator){
-                let change = [] 
-                return ChangeState.create(change, this)
+                 
+                let node = calculator.currentNode.neighbours[calculator.algoInfo['loopNeighbourIndex']]
+                if(node.state != NODE_STATE.CLOSED && node.state != NODE_STATE.OPENED && node.state != NODE_STATE.BLOCKED)
+                    calculator.setJumpToLineNum(7)
+                return {executedLine: this}
+            }, 
+            undo: function(calculator, change){
+
+            } 
+        },
+        { // '            continue'
+            execute: function(calculator){
+                 
+                calculator.setJumpToLineNum(4)
+                return {executedLine: this}
+            }, 
+            undo: function(calculator, change){
+
+            } 
+        },
+        { // '        set neighbour.parent to visited',
+            execute: function(calculator){
+                 
+                calculator.currentNode.neighbours[calculator.algoInfo['loopNeighbourIndex']].parent = calculator.currentNode
+                return {executedLine: this}
+            }, 
+            undo: function(calculator, change){
+                calculator.currentNode.neighbours[calculator.algoInfo['loopNeighbourIndex']].parent = undefined
+            } 
+        },
+        { // '        if neighbour is empty OR START:',
+            execute: function(calculator){
+                 
+                let node = calculator.currentNode.neighbours[calculator.algoInfo['loopNeighbourIndex']]
+                console.log(node);
+                
+                if(node.state != NODE_STATE.EMPTY
+                    && node.state != NODE_STATE.START){
+                    calculator.setJumpToLineNum(12) // else if....
+                }
+                return {executedLine: this}
             }, undo: function(calculator, change){} 
         },
-        { // '        if neighbour is empty:',
+        { // '            calculate f, g & h',
             execute: function(calculator){
-                let change = [] 
-                return ChangeState.create(change, this)
-            }, undo: function(calculator, change){} 
+                // Show change in the view as well
+                 
+                let currNode = calculator.currentNode.neighbours[calculator.algoInfo['loopNeighbourIndex']]
+                let diffX = currNode.gridX - calculator.endNode.gridX,
+                    diffY = currNode.gridY - calculator.endNode.gridY
+
+                currNode.values.h = calculator.currentNode.values.h + 1
+                currNode.values.g = Math.sqrt(diffX*diffX + diffY*diffY)
+                currNode.values.f = currNode.values.h + currNode.values.g
+                
+                return {currNode: currNode, executedLine: this}
+            }, 
+            undo: function(calculator, change){
+                let currNode = change.currNode
+                currNode.values.h = 0
+                currNode.values.g = 0
+                currNode.values.f = 0
+            } 
         },
-        { // '            calculate g & h',
-            execute: function(calculator){
-                let change = [] 
-                return ChangeState.create(change, this)
-            }, undo: function(calculator, change){} 
-        },
-        // { // '            f = g + h',
-        //     execute: function(calculator){
-        //         let change = [] 
-        //         return ChangeState.create(change, this)
-        //     }, undo: function(calculator, change){} 
-        // },
         { // '            set neighbour state to opened',
             execute: function(calculator){
-                let change = [] 
-                return ChangeState.create(change, this)
-            }, undo: function(calculator, change){} 
+                 
+                let node = calculator.currentNode.neighbours[calculator.algoInfo['loopNeighbourIndex']]
+                calculator.changeNodeState(node, NODE_STATE.OPENED)
+                
+                return {openedNode: node, executedLine: this}
+            }, 
+            undo: function(calculator, change){
+                calculator.changeNodeState(chage.openedNode, NODE_STATE.EMPTY)
+                
+            } 
         },
         { // '            add neighbour to openSet',
             execute: function(calculator){
-                let change = [] 
-                return ChangeState.create(change, this)
-            }, undo: function(calculator, change){} 
+                calculator.addToQueue(calculator.currentNode.neighbours[calculator.algoInfo['loopNeighbourIndex']])
+                calculator.setJumpToLineNum(4)
+
+                return {executedLine: this}
+            }, 
+            undo: function(calculator, change){
+                calculator.popQueue()
+            } 
         },
         { // '        else if neighbour is an endpoint:',
             execute: function(calculator){
-                let change = [] 
-                return ChangeState.create(change, this)
+                 
+                if(calculator.currentNode.neighbours[calculator.algoInfo['loopNeighbourIndex']].state != NODE_STATE.END)
+                    calculator.setJumpToLineNum(14) // sort...
+                return {executedLine: this}
             }, undo: function(calculator, change){} 
         },
         { // '            return neighbour',
             execute: function(calculator){
-                let change = [] 
-                return ChangeState.create(change, this)
-            }, undo: function(calculator, change){} 
+                // TODO: Do something after return
+                 
+                calculator.isFinished = true
+                return {executedLine: this}
+            }, undo: function(calculator, change){
+                
+                calculator.isFinished = false
+            } 
+        },
+        { // '    sort queue by the f value',
+            execute: function(calculator){
+                 
+                calculator.sortQueue()
+                return {executedLine: this}
+            }, undo: function(calculator, change){
+            } 
         },
         { // 'while openSet.length > 0'
             execute: function(calculator){
-                calculator.setJumpToLineNum(2)
-                let change = [] 
-                return ChangeState.create(change, this)
+                 
+                if (calculator.openSet.length > 0)
+                    calculator.setJumpToLineNum(2)
+                return {executedLine: this}
             }, undo: function(calculator, change){
                 
             } 
@@ -130,11 +216,10 @@ var astar = {
         { // 'end'
             execute: function(calculator){
                 calculator.isFinished = true
-                let change = [] 
-                return ChangeState.create(change, this)
+                 
+                return {executedLine: this}
             }, undo: function(calculator, change){
                 calculator.isFinished = false
-
             } 
         },
     ],
@@ -144,14 +229,17 @@ var astar = {
         'do:',
         '    visited = openSet.pop()',
         '    set visited to closed',
-        '    for each neighbour in visited.neighbour:',
+        '    for each neighbour in visited.neighbours:',
+        '        if neighbour.state is closed or opened:',
+        '            continue',
+        '        set neighbour.parent to visited',
         '        if neighbour is empty:',
         '            calculate f, g & h',
-        // '            f = g + h',
         '            set neighbour state to opened',
         '            add neighbour to openSet',
         '        else if neighbour is an endpoint:',
         '            return neighbour',
+        '    sort queue by the f value',
         'while openSet.length > 0',
         'end',
     ].map(function(line) { // Change space to nbsp

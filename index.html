@@ -9,33 +9,51 @@
     <script src="lib/statemachine-min.js"></script>
     <script src="lib/async.min.js"></script>
 
-    <script src="mine/a_star.js"></script>
-    <script src="mine/play_panel.js"></script>
-    <script src="mine/code_panel.js"></script>
-    <script src="mine/grid_node.js"></script>
-    <script src="mine/calculator.js"></script>
-    <script src="mine/view.js"></script>
-    <script src="mine/controller.js"></script>
-    <script src="mine/main.js"></script>
+    <script src="d3.min.js"></script>
+
+    <script src="mine-2/a_star.js"></script>
+    <script src="mine-2/play_panel.js"></script>
+    <script src="mine-2/code_panel.js"></script>
+    <script src="mine-2/grid_node.js"></script>
+    <script src="mine-2/calculator.js"></script>
+    <script src="mine-2/view.js"></script>
+    <script src="mine-2/controller.js"></script>
+    <script src="mine-2/main.js"></script>
 
     <link rel="stylesheet" href="index.css">
     <title>Pathfinder</title>
 </head>
 <body>
     <div class="main__left">
+
         <div class="codes_panel">
-            <p class="code_line active_line">Lorem ipsum dolor sit amet consectetur adipisicing elit. Laborum eius accusantium aliquid praesentium,</p>
+            <!-- <p class="code_line active_line">Lorem ipsum dolor sit amet consectetur adipisicing elit. Laborum eius accusantium aliquid praesentium,</p>
             <p class="code_line">hic quisquam dicta vero ut quas at soluta</p>
-            <p class="code_line">accusamus mollitia libero a sunt facilis ad dolorum. Inventore.</p>
+            <p class="code_line">accusamus mollitia libero a sunt facilis ad dolorum. Inventore.</p> -->
         </div>
         <div class="buttons_panel">
-            <img id="back_button" class="control_button" src="images/prev.svg" alt="">
-            <img id="play_button" class="control_button" src="images/play.svg" alt="">
-            <img id="forward_button" class="control_button" src="images/next.svg" alt="">
-            
         </div>
         <div class="details_panel">
-
+            <div class="details__header">
+                <h2>History</h2>
+                <hr>
+            </div>
+            <ul class="deleted-history-list">
+            </ul>
+            <ul class="history-list">
+                <!-- <li class="animate-list-enter">Lorem ipsum dolor sit amet consectetur adipisicing elit.</li> 
+                <li class="animate-list-out">accusantium earum laudantium praesentium adipisci excepturi nulla, doloremque cum cupiditate minima exercitationem</li>
+                <li>suscipit quis delectus reprehenderit. Ea distinctio illo facere inventore!</li>
+                <li>Lorem ipsum dolor sit amet consectetur adipisicing elit.</li> 
+                <li>accusantium earum laudantium praesentium adipisci excepturi nulla, doloremque cum cupiditate minima exercitationem</li>
+                <li>suscipit quis delectus reprehenderit. Ea distinctio illo facere inventore!</li>
+                <li>Lorem ipsum dolor sit amet consectetur adipisicing elit.</li> 
+                <li>accusantium earum laudantium praesentium adipisci excepturi nulla, doloremque cum cupiditate minima exercitationem</li>
+                <li>suscipit quis delectus reprehenderit. Ea distinctio illo facere inventore!</li>
+                <li>Lorem ipsum dolor sit amet consectetur adipisicing elit.</li> 
+                <li>accusantium earum laudantium praesentium adipisci excepturi nulla, doloremque cum cupiditate minima exercitationem</li>
+                <li>suscipit quis delectus reprehenderit. Ea distinctio illo facere inventore!</li> -->
+            </ul>
         </div>
     </div>
     <div class="main__right">

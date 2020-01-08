@@ -1,37 +1,56 @@
+function interpolateColor(color1, color2, factor) {
+    if (arguments.length < 3) { 
+        factor = 0.5; 
+    }
+    var result = color1.slice();
+    for (var i = 0; i < 3; i++) {
+        result[i] = Math.round(result[i] + factor * (color2[i] - color1[i]));
+    }
+    return result;
+};
+// My function to interpolate between two colors completely, returning an array
+function interpolateColors(color1, color2, steps) {
+    var stepFactor = 1 / (steps - 1),
+        interpolatedColorArray = [];
+
+    color1 = color1.match(/\d+/g).map(Number);
+    color2 = color2.match(/\d+/g).map(Number);
+
+    for(var i = 0; i < steps; i++) {
+        interpolatedColorArray.push(interpolateColor(color1, color2, stepFactor * i));
+    }
+
+    return interpolatedColorArray;
+}
+
+var colors = interpolateColors('rgb(240, 64, 0)', 'rgb(0,255,0)', 10)
+
 var View = { 
-    nodeSize: 40, // width and height of a single node, in pixel
+    nodeSize: 60, // width and height of a single node, in pixel
     //#region Styles
     nodeStyle: {
-        normal: {
+        [NODE_STATE.EMPTY]: {
             fill: '#fff',
             'stroke-opacity': 0.2, // the border
         },
-        blocked: {
+        [NODE_STATE.BLOCKED]: {
             fill: 'grey',
             'stroke-opacity': 0.2,
         },
-        start: {
+        [NODE_STATE.START]: {
             fill: '#0d0',
             'stroke-opacity': 0.2,
         },
-        end: {
+        [NODE_STATE.END]: {
             fill: '#e40',
             'stroke-opacity': 0.2,
         },
-        opened: {
+        [NODE_STATE.OPENED]: {
             fill: '#98fb98',
             'stroke-opacity': 0.2,
         },
-        closed: {
+        [NODE_STATE.CLOSED]: {
             fill: '#afeeee',
-            'stroke-opacity': 0.2,
-        },
-        failed: {
-            fill: '#ff8888',
-            'stroke-opacity': 0.2,
-        },
-        tested: {
-            fill: '#e5e5e5',
             'stroke-opacity': 0.2,
         },
     },
@@ -56,16 +75,22 @@ var View = {
 
     generateNodeView: function(grid){ 
         // let f, g, h, styles = {'font-size': '10px', 'text-anchor': 'begin'}
+        let x = 10, y = 10
         for(var i = 0; i < grid.length; i++){
             var row = grid[i]
             for(var j = 0; j < row.length; j++){
-                var rect = this.paper.rect(i*this.nodeSize, j*this.nodeSize + this.queuePanelHeight, 
+                var rect = this.paper.rect(j*this.nodeSize, i*this.nodeSize + this.queuePanelHeight, 
                     this.nodeSize, this.nodeSize)
                 // f = this.paper.text(i*this.nodeSize, j*this.nodeSize, "10"); f.attr(styles).transform("t5,7")
                 // g = this.paper.text(i*this.nodeSize, j*this.nodeSize, "0"); g.attr(fontStyle).attr({'text-anchor':'end',transform:'translate(50,6)'})
                 // h = this.paper.text(i*this.nodeSize, j*this.nodeSize, "0"); h.attr(fontStyle).attr({'text-anchor':'end',transform:'translate(50,44)'})
+                let diffX = Math.abs(x - j), diffY = Math.abs(i - y)
+                let range = Math.sqrt(diffX*diffX + diffY*diffY)
 
-                rect.attr(this.nodeStyle.normal)
+                rect.attr(this.nodeStyle[NODE_STATE.EMPTY])
+                let color = colors[Math.min(Math.floor(range), 9)]
+                rect.attr({fill: `rgb(${color[0]},${color[1]},${color[2]})`})
+                
                 row[j].view.rect = rect
                 // row[j].view.f    = f
                 // row[j].view.g    = g
@@ -73,28 +98,13 @@ var View = {
 
             }
         }
+        // grid[1][0].view.rect.node.setAttribute('class', 'glowing')
         console.log(grid)
     },
     
-    // TODO: Operation must have its opposite for undo operation
-    possibleOperation: ['toQueue', 'fromQueue', 'open', 'close', 'empty', 'start', 'end'],
     setStateToNode: function(node, state, animateColor=false, animateZoom=false){
         console.log('node :', node);
-        var style
-        switch(state){
-            case NODE_STATE.START: style = this.nodeStyle.start
-                break
-            case NODE_STATE.OPENED: style = this.nodeStyle.opened
-                break
-            case NODE_STATE.CLOSED: style = this.nodeStyle.closed
-                break
-            case NODE_STATE.EMPTY: style = this.nodeStyle.normal
-                break
-            case NODE_STATE.END: style = this.nodeStyle.end
-                break
-            case NODE_STATE.BLOCKED: style = this.nodeStyle.blocked
-                break
-        }
+        let style = this.nodeStyle[state]
         
         if(animateColor)
             node.view.rect.animate(style, this.nodeColorizeEffect.duration)
@@ -105,6 +115,14 @@ var View = {
         //     node.view.group.toFront()
         //         .attr({transform: this.nodeZoomEffect.transform})
         //         .animate({transform: this.nodeZoomEffect.transformBack}, this.nodeZoomEffect.duration)
+    },
+
+    zoomNode: function(node, doesZoom){
+        console.log('node :', node);
+        if(node == undefined) return
+        node.view.rect.toFront().animate({transform: doesZoom ? 
+                    this.nodeZoomEffect.transform
+                : this.nodeZoomEffect.transformBack}, 200)
     },
 
     queue: [],
@@ -127,13 +145,22 @@ var View = {
             y: this.queueNodeY
         }, 500, "ease-out")
 
-        movingRect.data('ref', node.view.rect)
+        movingRect.data('ref', node)
         // movingRect.click($.proxy(this.popQueue, this)) // for debug purpose
 
         movingRect.hover(function(){
-            this.data('ref').attr({fill:'yellow'})
+            let node = this.data('ref')
+            console.log({
+                x: node.gridX,
+                y: node.gridY,
+                f: node.values.f,
+                g: node.values.g,
+                h: node.values.h,
+            });
+            
+            this.data('ref').view.rect.node.setAttribute('class', 'gold') //.attr({fill:'yellow'})
         }, function(){
-            this.data('ref').attr({fill: '#98fb98'})
+            this.data('ref').view.rect.node.setAttribute('class', '') //.attr({fill: '#98fb98'})
         })
         
         if(toFront)
@@ -153,8 +180,8 @@ var View = {
         let rect = this.queue.shift()
 
         rect.animate({
-            x: rect.data('ref').attrs.x, 
-            y: rect.data('ref').attrs.y
+            x: rect.data('ref').view.rect.attrs.x, 
+            y: rect.data('ref').view.rect.attrs.y
         }, 400, 'ease-out', function(){this.remove()})
         this.adjustQueue()
     },
@@ -162,10 +189,16 @@ var View = {
     ex: 7,5,1,2,3,9
     array -> [4,3,0,1,2,5]
     */
-   sortQueue: function(indexArray){
-       let newQueue = []
-       for(let i = 0; i < indexArray.length; i++){
-           newQueue.push(this.queue[indexArray.indexOf(i)])
+   sortQueue: function(sortedQueue){
+        let changeIndex = []
+
+        for (let i = 0; i < this.queue.length; i++) {
+            let n = this.queue[i].data('ref');
+            changeIndex.push(sortedQueue.indexOf(n))
+        }
+        let newQueue = []
+        for(let i = 0; i < changeIndex.length; i++){
+           newQueue.push(this.queue[changeIndex.indexOf(i)])
         }
         this.queue = newQueue
         this.adjustQueue()
@@ -199,7 +232,10 @@ var View = {
 
     //#region Coordinate Helper
     paperToGrid: function(coorX, coorY){ // Convert Paper coordinate to grid idx
-        return {x: Math.floor((coorY-this.queuePanelHeight)/this.nodeSize), y: Math.floor(coorX/this.nodeSize)}
+        return {
+            x: Math.floor(coorX/this.nodeSize), 
+            y: Math.floor((coorY-this.queuePanelHeight)/this.nodeSize)}
     }
     //#endregion
 }
+
