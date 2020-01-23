@@ -109,24 +109,29 @@ $.extend(Controller, {
                 endY = y == this.numRows - 1
                 endX = x == this.numCols - 1
 
+                if(!startX && !startY && this.grids[y-1][x-1] != NODE_STATE.BLOCKED)
+                    currNode.neighbours.push(this.grids[y-1][x-1])
+
                 if(!startY && this.grids[y-1][x] != NODE_STATE.BLOCKED)
                     currNode.neighbours.push(this.grids[y-1][x])
-                if(!endY && this.grids[y+1][x] != NODE_STATE.BLOCKED)
-                    currNode.neighbours.push(this.grids[y+1][x])
 
-                if(!startX && this.grids[y][x-1] != NODE_STATE.BLOCKED)
-                    currNode.neighbours.push(this.grids[y][x-1])
+                if(!endX && !startY && this.grids[y-1][x+1] != NODE_STATE.BLOCKED)
+                    currNode.neighbours.push(this.grids[y-1][x+1])
+
                 if(!endX&& this.grids[y][x+1] != NODE_STATE.BLOCKED)
                     currNode.neighbours.push(this.grids[y][x+1])
 
-                if(!startX && !startY && this.grids[y-1][x-1] != NODE_STATE.BLOCKED)
-                    currNode.neighbours.push(this.grids[y-1][x-1])
-                if(!endX && !startY && this.grids[y-1][x+1] != NODE_STATE.BLOCKED)
-                    currNode.neighbours.push(this.grids[y-1][x+1])
-                if(!startX && !endY && this.grids[y+1][x-1] != NODE_STATE.BLOCKED)
-                    currNode.neighbours.push(this.grids[y+1][x-1])
                 if(!endX && !endY && this.grids[y+1][x+1] != NODE_STATE.BLOCKED)
                     currNode.neighbours.push(this.grids[y+1][x+1])
+                    
+                if(!endY && this.grids[y+1][x] != NODE_STATE.BLOCKED)
+                    currNode.neighbours.push(this.grids[y+1][x])
+
+                if(!startX && !endY && this.grids[y+1][x-1] != NODE_STATE.BLOCKED)
+                    currNode.neighbours.push(this.grids[y+1][x-1])
+                    
+                if(!startX && this.grids[y][x-1] != NODE_STATE.BLOCKED)
+                    currNode.neighbours.push(this.grids[y][x-1])
                 
             }
         }

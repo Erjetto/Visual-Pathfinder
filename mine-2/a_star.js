@@ -5,6 +5,22 @@ var ChangeState = {
 		}
 	}
 }
+// 	'openSet = {start}',
+// 	'while openSet.length > 0:',
+// 	'    visited = openSet.pop()',
+// 	'    set visited to closed',
+// 	'    for each neighbour in visited.neighbours:',
+// 	'        if neighbour.state is closed or opened:',
+// 	'            continue',
+// 	'        set neighbour.parent to visited',
+// 	'        if neighbour is an endpoint:',
+// 	'            return neighbour',
+// 	'        calculate f, g & h',
+// 	'        set neighbour state to opened',
+// 	'        add neighbour to openSet',
+// 	'    sort queue by the f value',
+// 	'end',
+
 
 var astar = {
 	pseudocodes: [],
@@ -46,7 +62,8 @@ var astar = {
 	
 	*/
 	getCurrentNeighbourLoop1: (calculator) => calculator.currentNode.neighbours[calculator.algoInfo['loopNeighbourIndex']],
-	lines: [{ // Line index is defined automatically, scope is undefined or []
+	lines: [
+		{ // Line index is defined automatically, scope is undefined or []
 			lineIndex: undefined,
 			pseudocode: 'queue = {start}',
 			explanation: (calculator) => `Start node is put into Queue`,
@@ -61,6 +78,10 @@ var astar = {
 			undo: function (calculator, change) {
 				calculator.currentNode = calculator.shiftQueue()
 			},
+			onEnterLine: function(calculator, view) {
+				view.updateQueue()
+			},
+			onLeaveLine: function(calculator, view){}
 		},
 		{
 			pseudocode: 'while queue is not empty:',
@@ -79,6 +100,10 @@ var astar = {
 					explanation
 				})
 			},
+			onEnterLine: function(calculator, view) {
+				// view.updateQueue()
+			},
+			onLeaveLine: function(calculator, view){},
 			undo: function (calculator, change) {
 				calculator.nextCommandStack.splice(0, change.addedCommands)
 			},
@@ -101,6 +126,10 @@ var astar = {
 						calculator.addToQueue(change.node, true)
 						calculator.currentNode = change.prevNode
 					},
+					onEnterLine: function(calculator, view) {
+						view.updateQueue()
+					},
+					onLeaveLine: function(calculator, view){},
 				},
 				{
 					pseudocode: 'set visited to closed',
@@ -120,6 +149,10 @@ var astar = {
 						calculator.changeNodeState(calculator.currentNode,
 							NODE_STATE.OPENED)
 					},
+					onEnterLine: function(calculator, view) {
+						view.updateQueue()
+					},
+					onLeaveLine: function(calculator, view){},
 				},
 				{
 					pseudocode: 'for each neighbour in visited.neighbours:',
@@ -239,7 +272,7 @@ var astar = {
 								explanation: (calculator) => `We have reached an end`,
 								execute: function (calculator) {
 									calculator.setFinished(true)
-									alert('Reached end')
+									// alert('Reached end')
 									let explanation = this.explanation(calculator)
 									return ChangeState.create({
 										executedLine:this,
@@ -316,7 +349,7 @@ var astar = {
 				},
 				{
 					pseudocode: 'sort queue by the f value',
-					explanation: (calculator) => ``,
+					explanation: (calculator) => `Queue is sorted`,
 					execute: function (calculator) {
 						// Get all node's previous position
 						let prevArr = []
@@ -357,32 +390,51 @@ var astar = {
 			undo: function (calculator, change) {},
 		},
 	],
-	new_pseudo: [
-		`
+	// new_pseudo: [
+	// 	`
         
-        `
-	],
-	pseudocode: [
-		'openSet = {start}',
-		'while openSet.length > 0:',
-		'    visited = openSet.pop()',
-		'    set visited to closed',
-		'    for each neighbour in visited.neighbours:',
-		'        if neighbour.state is closed or opened:',
-		'            continue',
-		'        set neighbour.parent to visited',
-		'        if neighbour is an endpoint:',
-		'            return neighbour',
-		'        calculate f, g & h',
-		'        set neighbour state to opened',
-		'        add neighbour to openSet',
-		'    sort queue by the f value',
-		'end',
-	].map(function (line) { // Change space to nbsp
-		let spaceIdx = 0
-		while (line[spaceIdx] == ' ') spaceIdx++
-		line = line.substring(spaceIdx, line.length)
+   //      `
+	// ],
+	// pseudocode: [
+	// 	'openSet = {start}',
+	// 	'while openSet.length > 0:',
+	// 	'    visited = openSet.pop()',
+	// 	'    set visited to closed',
+	// 	'    for each neighbour in visited.neighbours:',
+	// 	'        if neighbour.state is closed or opened:',
+	// 	'            continue',
+	// 	'        set neighbour.parent to visited',
+	// 	'        if neighbour is an endpoint:',
+	// 	'            return neighbour',
+	// 	'        calculate f, g & h',
+	// 	'        set neighbour state to opened',
+	// 	'        add neighbour to openSet',
+	// 	'    sort queue by the f value',
+	// 	'end',
+	// ].map(function (line) { // Change space to nbsp
+	// 	let spaceIdx = 0
+	// 	while (line[spaceIdx] == ' ') spaceIdx++
+	// 	line = line.substring(spaceIdx, line.length)
 
-		return '&nbsp;'.repeat(spaceIdx) + line
-	}),
+	// 	return '&nbsp;'.repeat(spaceIdx) + line
+	// }),
 }
+
+
+
+let add_start,
+	while_length_more_than_0,
+	pop_queue,
+	set_visited_to_closed,
+	loop_neighbours,
+	if_neighbour_state_is_closed_or_opened,
+	continue_loop,
+	set_neighbour_to_visited,
+	if_neighbour_is_endpoint,
+	return_neighbour,
+	calculate_f_g_h,
+	set_neighbour_state_to_opened,
+	add_neighbour_to_queue
+	sort_queue_by_f,
+	end_while
+
