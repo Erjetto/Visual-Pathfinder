@@ -48,8 +48,8 @@ $.extend(Controller, {
 
         // return
         // this.bindMouseEvent()
-        this.setStartPos(this.grids[3][6])
-        this.setEndPos(this.grids[10][6])
+        this.setStartPos(this.grids[3][3])
+        this.setEndPos(this.grids[3][7])
         
         PlayPanel.playButton.click($.proxy(this.onClickPlay, this))
         PlayPanel.backButton.click($.proxy(this.onClickBack, this))

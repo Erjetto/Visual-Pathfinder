@@ -4,7 +4,7 @@ var CodePanel = {
     activeLine: undefined,
 
     init: function(){
-        this.panelNode = $('.codes_panel') // Get panel
+        this.panelNode = $('.codes__body    ') // Get panel
     },
     generateLine: function(lines){
         console.log('generating lines');

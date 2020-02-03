@@ -47,6 +47,10 @@ body{
     padding: 8px 0;
     font-size: 1rem;
 }
+.codes__header{
+    padding: 8px;
+    flex: 0 0 30px;
+}
 .code_line{
     padding: 1px 8px;
     font-family: 'Courier New', Courier, monospace
@@ -185,12 +189,13 @@ body{
     html{
         font-size: 0.7rem;
     }
+    
 
     .main__left{
         flex: 0 0 350px;
     }
     .codes_panel{
-        flex: 0 0 350px;
+        flex: 0 0 280px;
     }
 }
 

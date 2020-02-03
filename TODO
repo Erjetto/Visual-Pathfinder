@@ -55,8 +55,8 @@ Modules:
 	✔ Node berubah menjadi warna abu-abu jika ditandai sebagai node yang tidak dapat dilalui @done(19-12-27 20:58)
 	✔ Node berubah menjadi warna biru muda jika node possible untuk dilalui @done(19-12-27 20:58)
 	✔ Node berubah menjadi warna biru gelap jika node sudah divisit/dilalui @done(19-12-27 20:58)
-	☐ Membuat pathfinding menggunakan A* pada node grid yang sudah dibuat
-	☐ Menampilkan proses pathfind 1 per 1 dan bisa di next step / previous step
+	✔ Membuat pathfinding menggunakan A* pada node grid yang sudah dibuat @done(20-01-24 00:19)
+	✔ Menampilkan proses pathfind 1 per 1 dan bisa di next step / previous step @done(20-01-24 00:19)
 	✔ Membuat tombol next & prev untuk step pathfind @done(19-12-27 20:59)
 	✔ Menampilkan queue yang terjadi pada tiap step di sebelah kiri layar @done(19-12-27 20:58)
 	✔ Menampilkan g, h, f pada tiap node @done(19-12-27 20:58)
