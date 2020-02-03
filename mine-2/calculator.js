@@ -44,11 +44,11 @@ var Calculator = {
 	},
 	sortQueueByIndex: function (sortArrayIndexes) {
 		let newQueue = []
-		console.log(sortArrayIndexes);
+		// console.log(sortArrayIndexes);
 		
 		for (var i = 0; i < sortArrayIndexes.length; i++) 
 			newQueue.push(this.queue[sortArrayIndexes.indexOf(i)])
-		console.log(newQueue);
+		// console.log(newQueue);
 		
 		this.queue.splice(0,this.queue.length)
 		this.queue.push(...newQueue)

@@ -157,6 +157,8 @@ var astar = {
 				{
 					pseudocode: 'for each neighbour in visited.neighbours:',
 					explanation: function(calculator){
+						// console.log(calculator.algoInfo['loopNeighbourIndex']);
+						
 						if(calculator.algoInfo['loopNeighbourIndex'] == -1) return ' No more neighbours'
 						return  `Get the ${this.getNumberString(calculator.algoInfo['loopNeighbourIndex'])} neighbour from ${8} neighbours`
 					},
@@ -173,8 +175,7 @@ var astar = {
 						}
 					},
 					execute: function (calculator) {
-						// TODO: Review this command!
-						let prevIdx, addedCommands = 0
+						let prevIdx, amountsAdded = 0
 						if (calculator.algoInfo['loopNeighbourIndex'] >= calculator.currentNode.neighbours.length - 1) {
 							calculator.algoInfo['loopNeighbourIndex'] = -1
 							prevIdx = -1
@@ -182,58 +183,69 @@ var astar = {
 							prevIdx = calculator.algoInfo['loopNeighbourIndex']++
 							calculator.addCommandsFromScope([this])
 							calculator.addCommandsFromScope(this.scope)
-							addedCommands = this.scope.length + 1
+							amountsAdded = this.scope.length + 1
 						}
-
+						console.log(calculator.nextCommandStack.length);
+						
 						let explanation = this.explanation(calculator)
 						return ChangeState.create({
 							executedLine:this,
 							neighbour: astar.getCurrentNeighbourLoop1(calculator),
 							explanation,
 							prevIdx,
-							addedCommands
+							amountsAdded
 						})
 					},
 					undo: function (calculator, change) {
 						calculator.algoInfo['loopNeighbourIndex'] = change.prevIdx
-						if (change.prevIdx != -1) {
-							calculator.nextCommandStack.splice(0, change.addedCommands)
-						}
+						console.log('before: ' + calculator.nextCommandStack.length);
+						calculator.nextCommandStack.splice(0, change.amountsAdded)
+						console.log('after: ' + calculator.nextCommandStack.length);
+						console.log(calculator.nextCommandStack);
+						
 					},
 					scope: [{
 							pseudocode: 'if neighbour.state is either closed, opened, or wall:',
 							explanation: (calculator) => `Neighbour is ${astar.getCurrentNeighbourLoop1(calculator).state}`,
 							execute: function (calculator) {
+								let prevIdx, amountsAdded = 0
 								if(astar.getCurrentNeighbourLoop1(calculator).state != NODE_STATE.EMPTY &&
 									astar.getCurrentNeighbourLoop1(calculator).isEnd == false){
 									calculator.addCommandsFromScope(this.scope)
+									amountsAdded = this.scope.length
 								} 
 								let explanation = this.explanation(calculator)
 								return ChangeState.create({
 									executedLine:this,
-									explanation
+									explanation,
+									amountsAdded
 								})
 							},
 							undo: function (calculator, change) {
-								// TODO
+								calculator.nextCommandStack.splice(0, change.amountsAdded)
 							},
 							scope: [{
 								pseudocode: 'continue',
 								explanation: (calculator) => `Skip the neighbour`,
 								execute: function (calculator) {
-									while(calculator.nextCommandStack[0].pseudocode != 'for each neighbour in visited.neighbours:'){
-										calculator.nextCommandStack.shift()
+									let skippedLines = []
+									let amountsSkipped = 0
+									
+									while(calculator.nextCommandStack[amountsSkipped].pseudocode != 'for each neighbour in visited.neighbours:'){
+										amountsSkipped++
 									}
+									skippedLines.push(...calculator.nextCommandStack.splice(0, amountsSkipped))
 
 									let explanation = this.explanation(calculator)
 									return ChangeState.create({
 										executedLine:this,
 										neighbour: astar.getCurrentNeighbourLoop1(calculator),
-										explanation
+										explanation,
+										skippedLines
 									})
 								},
 								undo: function (calculator, change) {
-
+									calculator.addCommandsFromScope(change.skippedLines)
 								},
 							}, ]
 						},
